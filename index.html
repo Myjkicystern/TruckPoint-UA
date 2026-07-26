@@ -20,7 +20,7 @@ body{
     background:linear-gradient(180deg,#4a72ce,#1e293b);
     color:white;
     min-height:100vh;
-    padding-bottom:90px;
+    padding-bottom:0;
 }
 
 .header{
@@ -93,7 +93,7 @@ body{
 }
 
 .card .material-icons{
-    font-size:42px;
+    font-size:36px;
 }
 
 .card h3{
@@ -129,48 +129,18 @@ body{
 .map6{
     background:linear-gradient(135deg,#2563eb,#60a5fa);
 }
-.bottom-nav{
-    position:fixed;
-    bottom:0;
-    left:0;
-    width:100%;
-    height:55px;
-    background:rgba(15,23,42,.96);
-    backdrop-filter:blur(10px);
-    display:flex;
-    justify-content:space-evenly;
-    align-items:center;
-    border-top:1px solid rgba(255,255,255,.08);
-    z-index:1000;
-}
 
-.nav-item{
-    color:rgba(255,255,255,.8);
-    text-decoration:none;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    transition:.25s;
+.map7{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
 }
-
-.nav-item .material-icons{
-    font-size:22px;
-}
-
-.nav-item:hover,
-.nav-item:active{
-    background:rgba(255,255,255,.12);
-    color:#fff;
+.map8{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
 }
 </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="logo">🚛</div>
     <div class="title">Truck Maps UA</div>
 </div>
 
@@ -190,33 +160,47 @@ body{
     </div>
 </a>
 
-    <a href="map.html" class="card map3">
+      <a href="https://site3.com" class="card map3">
      <div class="card-content">
-        <img src="moika_map.png" alt="Мийки цистерн" class="card-icon"style="width:50px;height:50px;">
-        <div class="card-title">Мийки цистерн</div>
+        <img src="platnii_map.svg" alt="Платні парковки" class="card-icon"style="width:50px;height:50px;">
+        <div class="card-title">Платні парковки</div>
     </div>
     </a>
 
-    <a href="https://site4.com" class="card map4"></a>
+    <a href="https://site4.com" class="card map4">
+             <div class="card-content">
+        <img src="parkinglogoo_map.svg" alt="Безкоштовні парковки" class="card-icon">
+        <div class="card-title">Безкоштовні парковки</div>
+    </div>
+    </a>
 
-    <a href="https://site3.com" class="card map5"></a>
+    <a href="https://site3.com" class="card map5">
+      <div class="card-content">
+        <img src="dush_map.svg" alt="Душ" class="card-icon">
+        <div class="card-title"> Душ</div>
+    </div>
+    </a>
 
-    <a href="https://site4.com" class="card map6"></a>
+    <a href="https://site4.com" class="card map6">
+     <div class="card-content">
+        <img src="pocket_map.svg" alt="Місця при дорозі" class="card-icon">
+        <div class="card-title">При дорозі</div>
+    </div>
+    </a>
+
+        <a href="map.html" class="card map7">
+     <div class="card-content">
+        <img src="moika_map.png" alt="Мийки цистерн" class="card-icon"style="width:45px;height:45px;">
+        <div class="card-title">Мийки цистерн</div>
+    </div>
+    </a>
+      <a href="map.html" class="card map8">
+     <div class="card-content">
+        <img src="water_map.svg" alt="Набрати воду" class="card-icon">
+        <div class="card-title">Набрати воду</div>
+    </div>
+    </a>
 
 </div>
-<div class="bottom-nav">
-    <a href="#" class="nav-item">
-        <span class="material-icons">home</span>
-    </a>
-
-    <a href="#" class="nav-item">
-        <span class="material-icons">search</span>
-    </a>
-
-    <a href="#" class="nav-item">
-        <span class="material-icons">person</span>
-    </a>
-</div>
-
 </body>
 </html>

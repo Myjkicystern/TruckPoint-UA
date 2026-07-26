@@ -361,6 +361,7 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 const points = [
+
   // ... всі інші точки
 ];
 
@@ -699,13 +700,26 @@ const loader = document.getElementById('loader');
 markersRef.once('value').then(snap => { setTimeout(()=>{ loader.classList.add('hidden-loader'); },300); });
 
 // Автоцентр
-markersRef.once('value').then(snap=>{
-  const data=snap.val();
-  if(!data) return;
-  const latlngs=Object.values(data).map(m=>[m.lat,m.lng]);
-  if(latlngs.length>0) map.fitBounds(latlngs,{padding:[-50,10]});
-});
+markersRef.once("value").then(snap => {
+    const data = snap.val();
+    if (!data) return;
 
+    const bounds = [];
+
+    Object.values(data).forEach(m => {
+        if (typeof m.lat === "number" && typeof m.lng === "number") {
+            bounds.push([m.lat, m.lng]);
+        }
+    });
+
+    if (bounds.length) {
+        setTimeout(() => {
+            map.fitBounds(bounds, {
+                padding: [30, 30]
+            });
+        }, 350);
+    }
+});
 // ----------------- Адмін -----------------
 document.getElementById('adminBtn').onclick=()=>{
   if (isAdmin) {

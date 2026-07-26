@@ -229,9 +229,7 @@ if(!firebase.apps.length){
 
 firebase.database().ref("comments").get().then(snapshot => {
     console.log("Comments:", snapshot.val());
-}).catch(err => {
-    console.error(err);
-});
+})
 }
 
 // Перевірка авторизації
@@ -285,7 +283,7 @@ function saveComment(){
         return;
     }
 
-  firebase.database().ref("comments").push({
+firebase.database().ref("comments").push({
 
     uid: user.uid,
     name: name,
@@ -294,13 +292,16 @@ function saveComment(){
     date: new Date().toLocaleString("uk-UA"),
     likes: 0
 
+}).then(() => {
+
+    document.getElementById("comment").value = "";
+
 });
 
 }
 
 // Завантаження коментарів
-firebase.database().ref("comments").once("value")
-.then(snapshot => {
+firebase.database().ref("comments").on("value", snapshot => {
 
     console.log("Snapshot exists:", snapshot.exists());
 
@@ -315,6 +316,7 @@ firebase.database().ref("comments").once("value")
     }
 
     const arr = Object.entries(data);
+    arr.reverse();
 
     document.getElementById("commentsCount").textContent = arr.length;
     const list = document.getElementById("comments");
@@ -355,8 +357,8 @@ arr.forEach(([id, item]) => {
 
         <div class="actions">
             <button class="likeBtn"
-            onclick="likeComment('${id}', ${likes})">
-            ❤️ ${likes}
+            onclick="likeComment('${id}')">
+            👍 ${likes}
             </button>
 
             ${deleteButton}
@@ -370,13 +372,13 @@ arr.forEach(([id, item]) => {
     document.getElementById("commentsCount").textContent = arr.length;
 
 })
-.catch(err => {
-    console.error(err);
-});
-function likeComment(id,currentLikes){
+function likeComment(id){
 
-    firebase.database().ref("comments/"+id+"/likes")
-    .set(currentLikes+1);
+    const ref = firebase.database().ref("comments/" + id + "/likes");
+
+    ref.transaction(function(current){
+        return (current || 0) + 1;
+    });
 
 }
 

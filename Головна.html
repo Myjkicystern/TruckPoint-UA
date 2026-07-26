@@ -8,7 +8,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -227,40 +227,9 @@ TruckPoint UA
 <div class="title">Точки Зацікавленості</div>
 </div>
 
-
-<div class="card" onclick="location.href='stores.html'">
-<div class="icon">🏪</div>
-<div class="title">???</div>
-</div>
-
-
-<div class="card" onclick="location.href='washes.html'">
-<div class="icon">🚿</div>
-<div class="title">???</div>
-</div>
-
-
-<div class="card" onclick="location.href='parking.html'">
-<div class="icon">🅿️</div>
-<div class="title">???</div>
-</div>
-
-
-<div class="card" onclick="location.href='news.html'">
-<div class="icon">📰</div>
-<div class="title">???</div>
-</div>
-
-
-<div class="card" onclick="location.href='favorites.html'">
-<div class="icon">⭐</div>
-<div class="title">???</div>
-</div>
-
-
-<div class="card" onclick="location.href='settings.html'">
-<div class="icon">⚙️</div>
-<div class="title">Налаштування</div>
+<div class="card" onclick="location.href='https://for-driver.info/ua/traffic-ban.html'">
+<div class="icon">⚠️</div>
+<div class="title">Заборони руху</div>
 </div>
 
 
@@ -316,29 +285,92 @@ window.location.replace("index.html");
 
 else{
 
-let name = localStorage.getItem("userName") || user.displayName || "Користувач";
+   firebase.database().ref("users/" + user.uid).once("value").then(snapshot => {
 
-document.getElementById("userInfo").innerHTML =
-"👤 " + name +
-"<br>📍 Україна";
+    let name = "Користувач";
+
+    if (snapshot.exists() && snapshot.val().name) {
+        name = snapshot.val().name;
+    } else if (localStorage.getItem("userName")) {
+        name = localStorage.getItem("userName");
+    }
+
+    // Записуємо користувача в базу (якщо його ще немає)
+  firebase.database().ref("users/" + user.uid).once("value").then(snapshot => {
+    if (!snapshot.exists()) {
+        firebase.database().ref("users/" + user.uid).set({
+            name: name,
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+        });
+    }
+});
+
+    // Presence (хто зараз онлайн)
+    const connectedRef = firebase.database().ref(".info/connected");
+    const statusRef = firebase.database().ref("online/" + user.uid);
+
+    connectedRef.on("value", function(snap){
+
+        if(snap.val() === true){
+
+            statusRef.onDisconnect().remove();
+
+            statusRef.set({
+                name: name,
+                time: firebase.database.ServerValue.TIMESTAMP
+            });
+
+        }
+
+    });
+
+    // Оновлюємо інформацію в шапці
+    function updateHeader(){
+
+        firebase.database().ref("users").once("value").then(usersSnap=>{
+
+            const usersCount = usersSnap.numChildren();
+
+            firebase.database().ref("online").once("value").then(onlineSnap=>{
+
+                const onlineCount = onlineSnap.numChildren();
+
+                document.getElementById("userInfo").innerHTML =
+                "👤 " + name +
+                "<br>📍 Україна" +
+                "<br>👥 Користувачів: " + usersCount +
+                "<br>🟢 Онлайн: " + onlineCount;
+
+            });
+
+        });
+
+    }
+
+updateHeader();
+
+// Автоматично оновлювати онлайн
+firebase.database().ref("online").on("value", updateHeader);
+
+}); // <-- закриває then(snapshot => {...})
 
 }
 
-});
-
-
+}); // <-- закриває onAuthStateChanged
 
 function logout(){
 
-firebase.auth().signOut()
-.then(()=>{
+    const user = firebase.auth().currentUser;
 
-window.location.replace("index.html");
+    if(user){
+        firebase.database().ref("online/" + user.uid).remove();
+    }
 
-});
+    firebase.auth().signOut().then(()=>{
+        window.location.replace("index.html");
+    });
 
 }
-
 
 </script>
 

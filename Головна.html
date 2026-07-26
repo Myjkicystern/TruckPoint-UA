@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TruckPoint UA</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#edf3ff;
+min-height:100vh;
+}
+
+
+header{
+background:linear-gradient(135deg,#0057ff,#00a2ff);
+color:white;
+padding:20px;
+border-radius:0 0 25px 25px;
+box-shadow:0 5px 15px #0003;
+text-align:center;
+}
+
+.logo{
+font-size:28px;
+font-weight:700;
+}
+
+.user{
+margin-top:8px;
+font-size:15px;
+font-weight:500;
+}
+
+
+
+.container{
+
+padding:15px;
+max-width:600px;
+margin:auto;
+
+}
+
+
+
+.grid{
+
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+margin-top:15px;
+
+}
+
+
+
+.card{
+
+background:white;
+border-radius:18px;
+height:130px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+box-shadow:0 6px 15px #0002;
+cursor:pointer;
+transition:.2s;
+-webkit-tap-highlight-color:transparent;
+
+}
+
+
+
+.card:active{
+
+transform:scale(.96);
+
+}
+
+
+
+.icon{
+
+font-size:38px;
+
+}
+
+
+
+.title{
+
+margin-top:8px;
+font-size:15px;
+font-weight:600;
+text-align:center;
+
+}
+
+
+
+/* Телефон */
+
+@media(max-width:480px){
+
+
+header{
+
+padding:16px;
+
+}
+
+
+.logo{
+
+font-size:23px;
+
+}
+
+
+.grid{
+
+grid-template-columns:1fr;
+gap:12px;
+
+}
+
+
+
+.card{
+
+height:95px;
+flex-direction:row;
+justify-content:flex-start;
+padding-left:25px;
+
+}
+
+
+
+.icon{
+
+font-size:35px;
+width:60px;
+
+}
+
+
+
+.title{
+
+font-size:16px;
+margin-top:0;
+
+}
+
+
+}
+
+
+/* Планшет */
+
+@media(min-width:700px){
+
+
+.container{
+
+max-width:750px;
+
+}
+
+
+.card{
+
+height:150px;
+
+}
+
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<div class="logo">
+TruckPoint UA
+</div>
+
+<div class="user" id="userInfo">
+👤 Завантаження...
+</div>
+
+</header>
+
+
+
+<div class="container">
+
+<div class="grid">
+
+
+<div class="card" onclick="location.href='Точки Зацікавленості.html'">
+<div class="icon">🗺️</div>
+<div class="title">Точки Зацікавленості</div>
+</div>
+
+
+<div class="card" onclick="location.href='stores.html'">
+<div class="icon">🏪</div>
+<div class="title">???</div>
+</div>
+
+
+<div class="card" onclick="location.href='washes.html'">
+<div class="icon">🚿</div>
+<div class="title">???</div>
+</div>
+
+
+<div class="card" onclick="location.href='parking.html'">
+<div class="icon">🅿️</div>
+<div class="title">???</div>
+</div>
+
+
+<div class="card" onclick="location.href='news.html'">
+<div class="icon">📰</div>
+<div class="title">???</div>
+</div>
+
+
+<div class="card" onclick="location.href='favorites.html'">
+<div class="icon">⭐</div>
+<div class="title">???</div>
+</div>
+
+
+<div class="card" onclick="location.href='settings.html'">
+<div class="icon">⚙️</div>
+<div class="title">Налаштування</div>
+</div>
+
+
+<div class="card" onclick="logout()">
+<div class="icon">🚪</div>
+<div class="title">Вийти</div>
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<script>
+
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyAzOpcu7kdg0y8xwqD0oKk4eMfFSK946n4",
+
+authDomain: "truckpoint-ua.firebaseapp.com",
+
+databaseURL: "https://truckpoint-ua-default-rtdb.firebaseio.com",
+
+projectId: "truckpoint-ua",
+
+storageBucket: "truckpoint-ua.firebasestorage.app",
+
+messagingSenderId: "992372126132",
+
+appId: "1:992372126132:web:3378b6b1794066132d42e1"
+
+};
+
+
+if(!firebase.apps.length){
+
+firebase.initializeApp(firebaseConfig);
+
+}
+
+
+
+firebase.auth().onAuthStateChanged(user=>{
+
+if(!user){
+
+window.location.replace("index.html");
+
+}
+
+else{
+
+let name = localStorage.getItem("userName") || user.displayName || "Користувач";
+
+document.getElementById("userInfo").innerHTML =
+"👤 " + name +
+"<br>📍 Україна";
+
+}
+
+});
+
+
+
+function logout(){
+
+firebase.auth().signOut()
+.then(()=>{
+
+window.location.replace("index.html");
+
+});
+
+}
+
+
+</script>
+
+
+</body>
+</html>

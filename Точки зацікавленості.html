@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Truck Maps</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:linear-gradient(180deg,#4a72ce,#1e293b);
+    color:white;
+    min-height:100vh;
+    padding-bottom:0;
+}
+
+.header{
+    text-align:center;
+    padding:25px 15px;
+}
+
+.logo{
+    font-size:32px;
+    margin-bottom:5px;
+}
+
+.title{
+    font-size:28px;
+    font-weight:600;
+}
+
+.subtitle{
+    opacity:.8;
+    font-size:14px;
+}
+
+.cards{ 
+    padding:15px; 
+    display:grid; 
+    grid-template-columns:1fr 1fr; 
+    gap:15px; 
+} 
+.card{ 
+    aspect-ratio:1/1; 
+    border-radius:22px; 
+    box-shadow:0 4px 10px rgba(139, 143, 204, 0.25); 
+    display:flex; 
+    justify-content:center; 
+    align-items:center; 
+    text-decoration:none; 
+    text-align:center; 
+    color:white; 
+}
+.card-content{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    text-align:center;
+}
+
+.card-icon{
+     width:55px; 
+     height:55px; 
+    } 
+    .card-title{ 
+        font-family:'Montserrat',sans-serif; 
+        margin-top:10px; 
+        font-size:17px; 
+        font-weight:700; 
+        line-height:1.3; 
+        letter-spacing:0.4px; 
+        text-align:center; color:#fff; 
+        text-shadow:0 2px 8px rgba(0,0,0,.35); }
+        
+.card:active{
+    transform:scale(.97);
+}
+
+.card .material-icons{
+    font-size:36px;
+}
+
+.card h3{
+    font-size:20px;
+    margin-bottom:5px;
+}
+
+.card p{
+    font-size:13px;
+    opacity:.9;
+}
+
+.map1{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+}
+
+.map2{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+}
+
+.map3{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+}
+
+.map4{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+}
+
+.map5{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+}
+
+.map6{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+}
+
+.map7{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+}
+.map8{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="title">Точки Зацікавленості</div>
+</div>
+
+<div class="cards">
+
+<a href="Магазини.html" class="card map1">
+    <div class="card-content">
+        <img src="maarket_map.svg" alt="Магазини" class="card-icon">
+        <div class="card-title">Продуктові магазини</div>
+    </div>
+</a>
+
+   <a href="Promky.html" class="card map2">
+    <div class="card-content">
+        <img src="promzona_map.svg" alt="Місця в Пром-Зонах" class="card-icon">
+        <div class="card-title">Місця в Пром-Зонах</div>
+    </div>
+</a>
+
+      <a href="https://site3.com" class="card map3">
+     <div class="card-content">
+        <img src="platnii_map.svg" alt="Платні парковки" class="card-icon"style="width:50px;height:50px;">
+        <div class="card-title">Платні парковки</div>
+    </div>
+    </a>
+
+    <a href="https://site4.com" class="card map4">
+             <div class="card-content">
+        <img src="parkinglogoo_map.svg" alt="Безкоштовні парковки" class="card-icon">
+        <div class="card-title">Безкоштовні парковки</div>
+    </div>
+    </a>
+
+    <a href="https://site3.com" class="card map5">
+      <div class="card-content">
+        <img src="dush_map.svg" alt="Душ" class="card-icon">
+        <div class="card-title"> Душ</div>
+    </div>
+    </a>
+
+    <a href="https://site4.com" class="card map6">
+     <div class="card-content">
+        <img src="pocket_map.svg" alt="Місця при дорозі" class="card-icon">
+        <div class="card-title">При дорозі</div>
+    </div>
+    </a>
+
+        <a href="map.html" class="card map7">
+     <div class="card-content">
+        <img src="moika_map.png" alt="Мийки цистерн" class="card-icon"style="width:45px;height:45px;">
+        <div class="card-title">Мийки цистерн</div>
+    </div>
+    </a>
+      <a href="map.html" class="card map8">
+     <div class="card-content">
+        <img src="water_map.svg" alt="Набрати воду" class="card-icon">
+        <div class="card-title">Набрати воду</div>
+    </div>
+    </a>
+
+</div>
+</body>
+</html>

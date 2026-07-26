@@ -699,26 +699,70 @@ markersRef.on('child_removed',snap=>{ if(markers[snap.key]){ map.removeLayer(mar
 const loader = document.getElementById('loader');
 markersRef.once('value').then(snap => { setTimeout(()=>{ loader.classList.add('hidden-loader'); },300); });
 
-// Автоцентр
+// Автоматично відкривати карту біля користувача
 markersRef.once("value").then(snap => {
-    const data = snap.val();
-    if (!data) return;
 
+    const data = snap.val();
     const bounds = [];
 
-    Object.values(data).forEach(m => {
-        if (typeof m.lat === "number" && typeof m.lng === "number") {
-            bounds.push([m.lat, m.lng]);
-        }
-    });
+    if (data) {
+        Object.values(data).forEach(m => {
+            if (typeof m.lat === "number" && typeof m.lng === "number") {
+                bounds.push([m.lat, m.lng]);
+            }
+        });
+    }
 
-    if (bounds.length) {
-        setTimeout(() => {
+    if (navigator.geolocation) {
+
+        navigator.geolocation.getCurrentPosition(
+
+            pos => {
+
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+
+                map.setView([lat, lng], 9);
+
+                window.userMarker = L.circleMarker([lat, lng], {
+                    radius: 8,
+                    color: "#fff",
+                    fillColor: "#3399ff",
+                    fillOpacity: 0.9
+                }).addTo(map)
+                  .bindPopup("📍 Ви тут");
+
+            },
+
+            () => {
+
+                // Якщо геолокація заборонена — показуємо всі точки
+                if (bounds.length) {
+                    map.fitBounds(bounds, {
+                        padding: [30, 30]
+                    });
+                }
+
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+
+        );
+
+    } else {
+
+        if (bounds.length) {
             map.fitBounds(bounds, {
                 padding: [30, 30]
             });
-        }, 350);
+        }
+
     }
+
 });
 // ----------------- Адмін -----------------
 document.getElementById('adminBtn').onclick=()=>{

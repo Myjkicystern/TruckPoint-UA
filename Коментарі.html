@@ -367,7 +367,7 @@ arr.forEach(([id, item]) => {
 
 });
 
-    alert("Коментарів: " + arr.length);
+    document.getElementById("commentsCount").textContent = arr.length;
 
 })
 .catch(err => {

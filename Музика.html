@@ -396,6 +396,11 @@ New
 Різне
 </button>
 
+<button class="genreBtn" onclick="showMyPlaylist()">
+Мій плейлист
+</button>
+
+
 </div>
 
 
@@ -497,8 +502,20 @@ let folder = "New";
 let playlist = [];
 let current = 0;
 
+let myPlaylist = JSON.parse(localStorage.getItem("myPlaylist")) || [];
+
 const audio = document.getElementById("audio");
 const playBtn = document.getElementById("playBtn");
+
+function removeFromPlaylist(index){
+
+    myPlaylist.splice(index, 1);
+
+    localStorage.setItem("myPlaylist", JSON.stringify(myPlaylist));
+
+    showMyPlaylist();
+
+}
 
 async function loadPlaylist(){
 
@@ -550,31 +567,36 @@ async function loadPlaylist(){
 
 }
 
-function showSongs(){
+function showSongs(isMyPlaylist = false){
 
-    let html="";
+    let html = "";
 
     playlist.forEach((song,index)=>{
 
-        html+=`
+        html += `
         <div class="songItem" onclick="loadSong(${index});playMusic()">
 
             <i class="fa-solid fa-music songIcon"></i>
 
-            <div>
-
+            <div style="flex:1">
                 <div class="songTitle">${song.title}</div>
-
                 <div class="songArtist">${song.artist}</div>
-
             </div>
 
-        </div>
-        `;
+            ${
+                isMyPlaylist
+                ? `<button onclick="event.stopPropagation();removeFromPlaylist(${index})"
+                    style="background:none;border:none;color:red;font-size:22px;cursor:pointer;">🗑</button>`
+                : `<button onclick="event.stopPropagation();addToPlaylist(playlist[${index}])"
+style="background:#0a84ff;border:none;color:white;width:34px;height:34px;border-radius:50%;font-size:22px;font-weight:bold;cursor:pointer;">
++
+</button>`
+            }
 
+        </div>`;
     });
 
-    document.getElementById("songList").innerHTML=html;
+    document.getElementById("songList").innerHTML = html;
 
 }
 
@@ -688,21 +710,19 @@ function changeFolder(name){
 
 }
 
-document.getElementById("search").addEventListener("input",function(){
+function showMyPlaylist(){
 
-    let text=this.value.toLowerCase();
+    myPlaylist = JSON.parse(localStorage.getItem("myPlaylist")) || [];
 
-    let items=document.querySelectorAll(".songItem");
+    playlist = [...myPlaylist];
 
-    items.forEach(item=>{
+    showSongs(true);
 
-        item.style.display=item.innerText.toLowerCase().includes(text)
-        ? "flex"
-        : "none";
+    if(playlist.length){
+        loadSong(0);
+    }
 
-    });
-
-});
+}
 
 const slider = document.querySelector(".genreBar");
 
@@ -734,6 +754,29 @@ slider.addEventListener("mousemove", e => {
     const walk = (x - startX) * 2;
     slider.scrollLeft = scrollLeft - walk;
 });
+
+
+function addToPlaylist(song){
+
+    console.log(song);
+
+    myPlaylist = JSON.parse(localStorage.getItem("myPlaylist")) || [];
+
+    if(myPlaylist.some(s => s.url === song.url)){
+        alert("Трек уже є");
+        return;
+    }
+
+    myPlaylist.push(song);
+
+    localStorage.setItem("myPlaylist", JSON.stringify(myPlaylist));
+
+    console.log(localStorage.getItem("myPlaylist"));
+
+    alert("Додано!");
+
+}
+
 
 loadPlaylist();
 

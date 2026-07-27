@@ -227,6 +227,11 @@ TruckPoint UA
 <div class="title">Точки Зацікавленості</div>
 </div>
 
+<div class="card" onclick="location.href='Для відпочинку.html'">
+<div class="icon">☕</div>
+<div class="title">Для відпочинку</div>
+</div>
+
 <div class="card" onclick="location.href='https://for-driver.info/ua/traffic-ban.html'">
 <div class="icon">⚠️</div>
 <div class="title">Заборони руху</div>
@@ -299,34 +304,35 @@ else{
         name = localStorage.getItem("userName");
     }
 
-    // Записуємо користувача в базу (якщо його ще немає)
-  firebase.database().ref("users/" + user.uid).once("value").then(snapshot => {
-    if (!snapshot.exists()) {
-        firebase.database().ref("users/" + user.uid).set({
+// Записуємо користувача в базу (якщо його ще немає)
+if (!snapshot.exists()) {
+    firebase.database().ref("users/" + user.uid).set({
+        name: name,
+        createdAt: firebase.database.ServerValue.TIMESTAMP
+    });
+}
+// Presence (онлайн тільки коли відкритий додаток)
+
+const statusRef = firebase.database().ref("online/" + user.uid);
+const connectedRef = firebase.database().ref(".info/connected");
+
+connectedRef.on("value", function(snap){
+
+    if(snap.val() === true){
+
+        // якщо закрив сторінку - видалити статус
+        statusRef.onDisconnect().remove();
+
+        // записати онлайн
+        statusRef.set({
             name: name,
-            createdAt: firebase.database.ServerValue.TIMESTAMP
+            time: firebase.database.ServerValue.TIMESTAMP
         });
+
     }
+
 });
 
-    // Presence (хто зараз онлайн)
-    const connectedRef = firebase.database().ref(".info/connected");
-    const statusRef = firebase.database().ref("online/" + user.uid);
-
-    connectedRef.on("value", function(snap){
-
-        if(snap.val() === true){
-
-            statusRef.onDisconnect().remove();
-
-            statusRef.set({
-                name: name,
-                time: firebase.database.ServerValue.TIMESTAMP
-            });
-
-        }
-
-    });
 
     // Оновлюємо інформацію в шапці
     function updateHeader(){
@@ -353,7 +359,8 @@ else{
 updateHeader();
 
 // Автоматично оновлювати онлайн
-firebase.database().ref("online").on("value", updateHeader);
+    updateHeader();
+
 
 }); // <-- закриває then(snapshot => {...})
 

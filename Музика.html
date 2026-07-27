@@ -92,38 +92,41 @@ outline:none;
 }
 
 /* GENRES */
-
 .genreBar{
 
 display:flex;
+flex-wrap:nowrap;
+
+gap:12px;
 
 overflow-x:auto;
-
-gap:10px;
+overflow-y:hidden;
 
 padding:15px;
 
+-webkit-overflow-scrolling:touch;
+
 scrollbar-width:none;
+
+cursor:grab;
 
 }
 
 .genreBar::-webkit-scrollbar{
-
 display:none;
-
 }
 
 .genreBtn{
 
 flex:0 0 auto;
 
-padding:12px 22px;
+padding:12px 24px;
 
 border:none;
 
 border-radius:30px;
 
-background:linear-gradient(90deg,#0a84ff,#0049c9);
+background:linear-gradient(90deg,#0a84ff,#0057d9);
 
 color:white;
 
@@ -131,13 +134,9 @@ font-size:15px;
 
 font-weight:bold;
 
+white-space:nowrap;
+
 cursor:pointer;
-
-}
-
-.genreBtn:active{
-
-transform:scale(.95);
 
 }
 
@@ -378,8 +377,8 @@ height:60px;
 
 </header>
 
-<div class="search">
 
+<div class="genreBar">
 
 <button class="genreBtn" onclick="changeFolder('New')">
 New
@@ -392,6 +391,12 @@ New
 <button class="genreBtn" onclick="changeFolder('2000-x')">
 2000-х
 </button>
+
+<button class="genreBtn" onclick="changeFolder('Різне')">
+Різне
+</button>
+
+</div>
 
 
 </div>
@@ -697,6 +702,37 @@ document.getElementById("search").addEventListener("input",function(){
 
     });
 
+});
+
+const slider = document.querySelector(".genreBar");
+
+let isDown = false;
+let startX;
+let scrollLeft;
+
+slider.addEventListener("mousedown", e => {
+    isDown = true;
+    slider.style.cursor = "grabbing";
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+});
+
+slider.addEventListener("mouseleave", () => {
+    isDown = false;
+    slider.style.cursor = "grab";
+});
+
+slider.addEventListener("mouseup", () => {
+    isDown = false;
+    slider.style.cursor = "grab";
+});
+
+slider.addEventListener("mousemove", e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 2;
+    slider.scrollLeft = scrollLeft - walk;
 });
 
 loadPlaylist();

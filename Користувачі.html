@@ -292,7 +292,6 @@ const user=child.val();
 
 if(!user.showLocation) return;
 
-if(user.online!==true) return;
 
 const marker = L.marker(
     [user.lat, user.lng],
@@ -310,13 +309,15 @@ marker.bindTooltip(user.name, {
 });
 
 // Вікно при натисканні
+const status = user.online ? "🟢 Онлайн" : "⚪ Остання геолокація";
+
 marker.bindPopup(`
 <div style="text-align:center">
 <b>${user.name}</b>
 <br><br>
-🚛 Онлайн
+${status}
 <br>
-🕒 ${new Date(user.lastUpdate).toLocaleTimeString("uk-UA")}
+🕒 ${new Date(user.lastUpdate).toLocaleString("uk-UA")}
 </div>
 `);
 
@@ -581,29 +582,6 @@ lastUpdate:Date.now()
 
 }
 
-
-
-/* ---------- Закриття сторінки ---------- */
-
-window.addEventListener("beforeunload",()=>{
-
-db.ref("usersLocation/"+USER_ID).remove();
-
-});
-
-
-
-/* ---------- Оновлення ---------- */
-
-setInterval(()=>{
-
-if(navigator.geolocation){
-
-navigator.geolocation.getCurrentPosition(sendLocation);
-
-}
-
-},20000);
 </script>
 
 </body>

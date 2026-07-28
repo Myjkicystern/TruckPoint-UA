@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>TruckPoint UA</title>
+<title>Вхід - TruckPoint UA</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -21,239 +21,130 @@ font-family:'Poppins',sans-serif;
 }
 
 body{
-background:#edf3ff;
-min-height:100vh;
-}
-
-
-header{
-background:linear-gradient(135deg,#0057ff,#00a2ff);
+background:#0d1117;
 color:white;
-padding:20px;
-border-radius:0 0 25px 25px;
-box-shadow:0 5px 15px #0003;
-text-align:center;
-}
-
-.logo{
-font-size:28px;
-font-weight:700;
-}
-
-.user{
-margin-top:8px;
-font-size:15px;
-font-weight:500;
-}
-
-
-
-.container{
-
-padding:15px;
-max-width:600px;
-margin:auto;
-
-}
-
-
-
-.grid{
-
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:12px;
-margin-top:15px;
-
-}
-
-
-
-.card{
-
-background:white;
-border-radius:18px;
-height:130px;
+height:100vh;
 display:flex;
-flex-direction:column;
 justify-content:center;
 align-items:center;
-box-shadow:0 6px 15px #0002;
-cursor:pointer;
-transition:.2s;
--webkit-tap-highlight-color:transparent;
-
 }
 
+.login-box{
 
-
-.card:active{
-
-transform:scale(.96);
-
-}
-
-
-
-.icon{
-
-font-size:38px;
+width:90%;
+max-width:420px;
+background:#161b22;
+padding:35px;
+border-radius:20px;
+box-shadow:0 0 25px #0099ff55;
 
 }
-
-
-
-.title{
-
-margin-top:8px;
-font-size:15px;
-font-weight:600;
-text-align:center;
-
-}
-
-
-
-/* Телефон */
-
-@media(max-width:480px){
-
-
-header{
-
-padding:16px;
-
-}
-
 
 .logo{
 
-font-size:23px;
+text-align:center;
+font-size:38px;
+font-weight:700;
+color:#00bfff;
+margin-bottom:20px;
 
 }
 
-
-.grid{
-
-grid-template-columns:1fr;
-gap:12px;
-
+h2{
+text-align:center;
+margin-bottom:25px;
 }
 
 
+input{
 
-.card{
-
-height:95px;
-flex-direction:row;
-justify-content:flex-start;
-padding-left:25px;
-
-}
-
-
-
-.icon{
-
-font-size:35px;
-width:60px;
-
-}
-
-
-
-.title{
-
+width:100%;
+padding:15px;
+margin-bottom:15px;
+border-radius:12px;
+border:none;
 font-size:16px;
-margin-top:0;
 
 }
 
 
-}
+button{
 
-
-/* Планшет */
-
-@media(min-width:700px){
-
-
-.container{
-
-max-width:750px;
-
-}
-
-
-.card{
-
-height:150px;
+width:100%;
+padding:15px;
+border:none;
+border-radius:12px;
+background:#0099ff;
+color:white;
+font-size:18px;
+cursor:pointer;
 
 }
 
 
+button:hover{
+
+background:#0077cc;
+
 }
 
+
+.register{
+
+text-align:center;
+margin-top:20px;
+
+}
+
+
+.register a{
+
+color:#00bfff;
+text-decoration:none;
+
+}
 
 </style>
 
 </head>
 
-
 <body>
 
 
-<header>
+<div class="login-box">
+
 
 <div class="logo">
 TruckPoint UA
 </div>
 
-<div class="user" id="userInfo">
-👤 Завантаження...
-</div>
 
-</header>
+<h2>🔑 Вхід</h2>
 
 
-
-<div class="container">
-
-<div class="grid">
+<input id="email" type="email" placeholder="Email">
 
 
-<div class="card" onclick="location.href='Точки зацікавленості.html'">
-<div class="icon">🗺️</div>
-<div class="title">Точки Зацікавленості</div>
-</div>
+<input id="password" type="password" placeholder="Пароль">
 
-<div class="card" onclick="location.href='Для відпочинку.html'">
-<div class="icon">☕</div>
-<div class="title">Для відпочинку</div>
-</div>
 
-<div class="card" onclick="location.href='https://for-driver.info/ua/traffic-ban.html'">
-<div class="icon">⚠️</div>
-<div class="title">Заборони руху</div>
-</div>
+<button onclick="login()">
+Увійти
+</button>
 
-<div class="card" onclick="location.href='Користувачі.html'">
-    <div class="icon">📡</div>
-    <div class="title">Користувачі на мапі</div>
-</div>
 
-<div class="card" onclick="location.href='Коментарі.html'">
-    <div class="icon">💬</div>
-    <div class="title">Додати коментар</div>
-</div>
+<div class="register">
 
-<div class="card" onclick="logout()">
-<div class="icon">🚪</div>
-<div class="title">Вийти</div>
-</div>
+Новий користувач?
 
+<br>
+
+<a href="Реєстрація.html">
+📝 Створити акаунт
+</a>
 
 </div>
+
 
 </div>
 
@@ -281,111 +172,64 @@ appId: "1:992372126132:web:3378b6b1794066132d42e1"
 };
 
 
-if(!firebase.apps.length){
-
 firebase.initializeApp(firebaseConfig);
 
-}
+
+const auth = firebase.auth();
 
 
 
-firebase.auth().onAuthStateChanged(user=>{
+function login(){
 
-if(!user){
 
-window.location.replace("index.html");
+const email =
+document.getElementById("email").value;
 
-}
 
-else{
+const password =
+document.getElementById("password").value;
 
-   firebase.database().ref("users/" + user.uid).once("value").then(snapshot => {
 
-    let name = "Користувач";
 
-    if (snapshot.exists() && snapshot.val().name) {
-        name = snapshot.val().name;
-    } else if (localStorage.getItem("userName")) {
-        name = localStorage.getItem("userName");
-    }
+auth.signInWithEmailAndPassword(email,password)
 
-// Записуємо користувача в базу (якщо його ще немає)
-if (!snapshot.exists()) {
-    firebase.database().ref("users/" + user.uid).set({
-        name: name,
-        createdAt: firebase.database.ServerValue.TIMESTAMP
-    });
-}
-// Presence (онлайн тільки коли відкритий додаток)
 
-const statusRef = firebase.database().ref("online/" + user.uid);
-const connectedRef = firebase.database().ref(".info/connected");
+.then(()=>{
 
-connectedRef.on("value", function(snap){
 
-    if(snap.val() === true){
+window.location.href="Головна.html";
 
-        // якщо закрив сторінку - видалити статус
-        statusRef.onDisconnect().remove();
 
-        // записати онлайн
-        statusRef.set({
-            name: name,
-            time: firebase.database.ServerValue.TIMESTAMP
-        });
+})
 
-    }
+
+.catch(error=>{
+
+
+alert("Невірний Email або пароль");
+
 
 });
 
 
-    // Оновлюємо інформацію в шапці
-    function updateHeader(){
-
-        firebase.database().ref("users").once("value").then(usersSnap=>{
-
-            const usersCount = usersSnap.numChildren();
-
-            firebase.database().ref("online").once("value").then(onlineSnap=>{
-
-                const onlineCount = onlineSnap.numChildren();
-
-                document.getElementById("userInfo").innerHTML =
-                "👤 " + name +
-                "<br>👥 Користувачів: " + usersCount +
-                "<br>🟢 Онлайн: " + onlineCount;
-
-            });
-
-        });
-
-    }
-
-updateHeader();
-
-// Автоматично оновлювати онлайн
-    updateHeader();
+}
 
 
-}); // <-- закриває then(snapshot => {...})
+
+
+// якщо користувач вже увійшов
+auth.onAuthStateChanged((user)=>{
+
+
+if(user){
+
+window.location.href="Головна.html";
 
 }
 
-}); // <-- закриває onAuthStateChanged
 
-function logout(){
+});
 
-    const user = firebase.auth().currentUser;
-
-    if(user){
-        firebase.database().ref("online/" + user.uid).remove();
-    }
-
-    firebase.auth().signOut().then(()=>{
-        window.location.replace("index.html");
-    });
-
-}
 
 </script>
 

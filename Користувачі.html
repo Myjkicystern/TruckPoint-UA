@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0d6efd">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<title>Учасники Онлайн</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<style>
+
+html,
+body{
+height:100%;
+margin:0;
+font-family:Arial;
+overflow:hidden;
+background:#f3f3f3;
+}
+
+#map{
+width:100%;
+height:100%;
+}
+
+button{
+border:none;
+cursor:pointer;
+box-shadow:0 3px 8px rgba(0,0,0,.25);
+}
+
+#onlineBtn{
+
+position:fixed;
+
+right:15px;
+
+bottom:20px;
+
+width:58px;
+
+height:58px;
+
+border-radius:50%;
+
+background:#28a745;
+
+color:white;
+
+font-size:26px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+box-shadow:0 4px 12px rgba(0,0,0,.35);
+
+z-index:5000;
+
+}
+
+#layerBtn{
+left:15px;
+bottom:20px;
+background:#0d6efd;
+}
+
+#onlineBtn{
+right:15px;
+bottom:150px;
+background:#28a745;
+}
+
+#locateBtn{
+right:15px;
+bottom:80px;
+background:#17a2b8;
+}
+
+
+#title{
+position:fixed;
+top:10px;
+left:50%;
+transform:translateX(-50%);
+background:white;
+padding:10px 18px;
+border-radius:25px;
+font-size:17px;
+font-weight:700;
+text-align:center;
+white-space:nowrap;
+box-shadow:0 3px 10px rgba(0,0,0,.25);
+z-index:5000;
+}
+@media(max-width:700px){
+
+#title{
+
+font-size:14px;
+
+padding:7px 14px;
+
+}
+
+
+}
+html,
+body,
+#map{
+
+width:100%;
+height:100%;
+margin:0;
+padding:0;
+
+}
+
+.leaflet-top.leaflet-right{
+top:10px;
+right:10px;
+}
+
+.online-counter{
+background:white;
+padding:10px 16px;
+border-radius:25px;
+font-size:17px;
+font-weight:700;
+text-align:center;
+box-shadow:0 3px 10px rgba(0,0,0,.25);
+}
+.userLabel{
+    background:rgba(255,255,255,0.95);
+    border:none;
+    border-radius:14px;
+    padding:3px 10px;
+    font-size:12px;
+    font-weight:bold;
+    color:#222;
+    box-shadow:0 2px 6px rgba(0,0,0,.25);
+}
+
+.userLabel:before{
+    display:none;
+}
+</style>
+
+</head>
+
+<body>
+
+
+<div id="map"></div>
+
+<button id="layerBtn">
+🗺️
+</button>
+
+<button id="onlineBtn">
+🟢
+</button>
+
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDLYjqixyEDw1hb2v_UHf9aGz6mztC4LTk",
+  authDomain: "truckpoint-ua-woda.firebaseapp.com",
+  databaseURL: "https://truckpoint-ua-woda-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "truckpoint-ua-woda",
+  storageBucket: "truckpoint-ua-woda.firebasestorage.app",
+  messagingSenderId: "156712107057",
+  appId: "1:156712107057:web:6142025eac4baf3a09e910"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+firebase.initializeApp(firebaseConfig);
+
+
+const USER_ID="user_"+Math.random().toString(36).substr(2,9);
+
+let showLocation=true;
+
+const map=L.map("map").setView([49.0,31.0],6);
+
+map.zoomControl.remove();
+
+const googleMap=L.tileLayer(
+
+"https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+
+{
+
+maxZoom:20
+
+}
+
+).addTo(map);
+
+const googleHybrid=L.tileLayer(
+
+"https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+
+{
+
+maxZoom:20
+
+}
+
+);
+
+let currentLayer=googleMap;
+
+document.getElementById("layerBtn").onclick=()=>{
+
+map.removeLayer(currentLayer);
+
+if(currentLayer===googleMap){
+
+currentLayer=googleHybrid;
+
+map.addLayer(currentLayer);
+
+document.getElementById("layerBtn").innerHTML="🛰️";
+
+}else{
+
+currentLayer=googleMap;
+
+map.addLayer(currentLayer);
+
+document.getElementById("layerBtn").innerHTML="🗺️";
+
+}
+
+};
+
+const truckIcon=L.divIcon({
+
+className:"",
+
+html:`
+
+<div style="
+
+font-size:28px;
+
+filter:drop-shadow(0 0 5px black);
+
+">
+
+🚛
+
+</div>
+
+`,
+
+iconSize:[30,30],
+
+iconAnchor:[15,15]
+
+});
+
+const users={};
+const usersLayer=L.layerGroup().addTo(map);
+
+function loadUsers(){
+
+db.ref("usersLocation").on("value",snap=>{
+
+usersLayer.clearLayers();
+
+snap.forEach(child=>{
+
+const user=child.val();
+
+if(!user.showLocation) return;
+
+if(user.online!==true) return;
+
+const marker = L.marker(
+    [user.lat, user.lng],
+    {
+        icon: truckIcon
+    }
+);
+
+// Ім'я над іконкою
+marker.bindTooltip(user.name, {
+    permanent: true,
+    direction: "top",
+    offset: [0, -18],
+    className: "userLabel"
+});
+
+// Вікно при натисканні
+marker.bindPopup(`
+<div style="text-align:center">
+<b>${user.name}</b>
+<br><br>
+🚛 Онлайн
+<br>
+🕒 ${new Date(user.lastUpdate).toLocaleTimeString("uk-UA")}
+</div>
+`);
+
+marker.addTo(usersLayer);
+
+});
+
+});
+
+}
+
+loadUsers();
+
+let myMarker=null;
+
+function sendLocation(position){
+
+const lat=position.coords.latitude;
+
+const lng=position.coords.longitude;
+
+if(myMarker){
+
+myMarker.setLatLng([lat,lng]);
+
+}else{
+
+myMarker=L.circleMarker(
+
+[lat,lng],
+
+{
+
+radius:8,
+
+color:"#fff",
+
+fillColor:"#2196f3",
+
+fillOpacity:1
+
+}
+
+).addTo(map);
+
+}
+
+db.ref("usersLocation/"+USER_ID).set({
+
+name:localStorage.getItem("userName")||"Водій",
+
+lat:lat,
+
+lng:lng,
+
+online:true,
+
+showLocation:showLocation,
+
+lastUpdate:Date.now()
+
+});
+
+}
+
+if(navigator.geolocation){
+
+navigator.geolocation.watchPosition(
+
+sendLocation,
+
+()=>{
+
+alert("Не вдалося отримати геолокацію.");
+
+},
+
+{
+
+enableHighAccuracy:true,
+
+maximumAge:5000,
+
+timeout:10000
+
+}
+
+);
+
+}
+
+
+document.getElementById("onlineBtn").onclick=()=>{
+
+showLocation=!showLocation;
+
+db.ref(
+
+"usersLocation/"+USER_ID+"/showLocation"
+
+).set(showLocation);
+
+document.getElementById("onlineBtn").innerHTML=
+
+showLocation ? "🟢" : "🔴";
+
+};
+
+window.addEventListener(
+
+"beforeunload",
+
+()=>{
+
+db.ref(
+
+"usersLocation/"+USER_ID
+
+).update({
+
+online:false
+
+});
+
+}
+
+);
+/* ---------- Лічильник користувачів ---------- */
+
+const onlineControl = L.control({position:"topright"});
+
+onlineControl.onAdd=function(){
+
+this._div = L.DomUtil.create("div","online-counter");
+
+this._div.style.background="white";
+this._div.style.padding="8px 12px";
+this._div.style.borderRadius="10px";
+this._div.style.fontWeight="bold";
+this._div.style.boxShadow="0 2px 8px rgba(0,0,0,.25)";
+this._div.innerHTML="🚛 Онлайн: 0";
+
+return this._div;
+
+};
+
+onlineControl.addTo(map);
+
+
+
+function updateOnlineCounter(){
+
+db.ref("usersLocation").once("value").then(snap=>{
+
+let count=0;
+
+snap.forEach(user=>{
+
+const d=user.val();
+
+if(d.online && d.showLocation){
+
+if(Date.now()-d.lastUpdate<120000){
+
+count++;
+
+}
+
+}
+
+});
+
+onlineControl._div.innerHTML="🚛 Онлайн: "+count;
+
+});
+
+}
+
+setInterval(updateOnlineCounter,5000);
+
+updateOnlineCounter();
+
+
+
+/* ---------- Видалення старих користувачів ---------- */
+
+setInterval(()=>{
+
+db.ref("usersLocation").once("value").then(snap=>{
+
+snap.forEach(child=>{
+
+const d=child.val();
+
+if(Date.now()-d.lastUpdate>120000){
+
+db.ref("usersLocation/"+child.key).remove();
+
+}
+
+});
+
+});
+
+},60000);
+
+
+
+/* ---------- Автоматичне центрування ---------- */
+
+let firstLocate=true;
+
+function sendLocation(position){
+
+const lat=position.coords.latitude;
+
+const lng=position.coords.longitude;
+
+if(firstLocate){
+
+map.setView([lat,lng],12);
+
+firstLocate=false;
+
+}
+
+if(myMarker){
+
+myMarker.setLatLng([lat,lng]);
+
+}else{
+
+myMarker=L.circleMarker([lat,lng],{
+
+radius:8,
+
+color:"#fff",
+
+fillColor:"#2196f3",
+
+fillOpacity:1
+
+}).addTo(map);
+
+}
+
+db.ref("usersLocation/"+USER_ID).set({
+
+name:localStorage.getItem("userName")||"Водій",
+
+lat,
+
+lng,
+
+online:true,
+
+showLocation,
+
+lastUpdate:Date.now()
+
+});
+
+}
+
+
+
+/* ---------- Закриття сторінки ---------- */
+
+window.addEventListener("beforeunload",()=>{
+
+db.ref("usersLocation/"+USER_ID).remove();
+
+});
+
+
+
+/* ---------- Оновлення ---------- */
+
+setInterval(()=>{
+
+if(navigator.geolocation){
+
+navigator.geolocation.getCurrentPosition(sendLocation);
+
+}
+
+},20000);
+</script>
+
+</body>
+</html>

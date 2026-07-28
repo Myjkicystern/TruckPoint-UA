@@ -322,6 +322,38 @@ height:60px;
     padding-bottom:180px;
 }
 
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:110px;
+    transform:translateX(-50%) translateY(30px);
+    background:linear-gradient(90deg,#a9b7c5,#575e69);
+    color:#fff;
+    padding:14px 22px;
+    border-radius:30px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:15px;
+    font-weight:500;
+    box-shadow:0 8px 25px rgba(0,0,0,.35);
+    opacity:0;
+    visibility:hidden;
+    transition:.35s;
+    z-index:9999;
+}
+
+.toast.show{
+    opacity:1;
+    visibility:visible;
+    transform:translateX(-50%) translateY(0);
+}
+
+.toast i{
+    color:#7CFF8A;
+    font-size:20px;
+}
+
 </style>
 
 </head>
@@ -443,6 +475,11 @@ max="100">
 
 </div>
 
+</div>
+
+<div id="toast" class="toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Додано до вашого плей-листа</span>
 </div>
 
 <script>
@@ -716,7 +753,7 @@ function addToPlaylist(song){
     myPlaylist = JSON.parse(localStorage.getItem("myPlaylist")) || [];
 
     if(myPlaylist.some(s => s.url === song.url)){
-        alert("Трек уже є");
+        showToast("⚠️ Трек уже є у плей-листі");
         return;
     }
 
@@ -726,10 +763,25 @@ function addToPlaylist(song){
 
     console.log(localStorage.getItem("myPlaylist"));
 
-    alert("Додано!");
+    showToast("✅ Додано до вашого плей-листа");
 
 }
 
+function showToast(text){
+
+    const toast = document.getElementById("toast");
+
+    toast.querySelector("span").textContent = text;
+
+    toast.classList.add("show");
+
+    clearTimeout(toast.timer);
+
+    toast.timer = setTimeout(()=>{
+        toast.classList.remove("show");
+    },3000);
+
+}
 
 loadPlaylist();
 

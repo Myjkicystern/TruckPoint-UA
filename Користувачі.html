@@ -17,6 +17,7 @@ href="https://unpkg.com/leaflet/dist/leaflet.css">
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
 <style>
 
@@ -178,21 +179,57 @@ box-shadow:0 3px 10px rgba(0,0,0,.25);
 <script>
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDLYjqixyEDw1hb2v_UHf9aGz6mztC4LTk",
-  authDomain: "truckpoint-ua-woda.firebaseapp.com",
-  databaseURL: "https://truckpoint-ua-woda-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "truckpoint-ua-woda",
-  storageBucket: "truckpoint-ua-woda.firebasestorage.app",
-  messagingSenderId: "156712107057",
-  appId: "1:156712107057:web:6142025eac4baf3a09e910"
+
+apiKey: "AIzaSyAzOpcu7kdg0y8xwqD0oKk4eMfFSK946n4",
+
+authDomain: "truckpoint-ua.firebaseapp.com",
+
+databaseURL: "https://truckpoint-ua-default-rtdb.firebaseio.com",
+
+projectId: "truckpoint-ua",
+
+storageBucket: "truckpoint-ua.firebasestorage.app",
+
+messagingSenderId: "992372126132",
+
+appId: "1:992372126132:web:3378b6b1794066132d42e1"
+
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const auth = firebase.auth();
+let currentUserName = "Водій";
+
+auth.onAuthStateChanged(async (user) => {
+
+    if (!user) return;
+
+    const snap = await db.ref("users/" + user.uid).once("value");
+
+    const profile = snap.val();
+
+    if (profile && profile.name) {
+        currentUserName = profile.name;
+    }
+
+});
 
 
 
-let USER_ID = localStorage.getItem("USER_ID");
+let USER_ID = null;
+
+auth.onAuthStateChanged(async (user) => {
+
+    if (!user) {
+        window.location.href = "Вхід.html";
+        return;
+    }
+
+    USER_ID = user.uid;
+
+    // ...
+});
 
 if(!USER_ID){
     USER_ID = "user_" + crypto.randomUUID();
@@ -384,31 +421,31 @@ let myMarker=null;
 // тут вже НЕМАЄ sendLocation()
 
 
-if(navigator.geolocation){
+auth.onAuthStateChanged(async (user) => {
 
-navigator.geolocation.watchPosition(
+    if (!user) {
+        window.location.href = "Вхід.html";
+        return;
+    }
 
-sendLocation,
+    const snap = await db.ref("users/" + user.uid).once("value");
+    const profile = snap.val();
 
-()=>{
+    currentUserName = profile?.name || "Водій";
 
-alert("Не вдалося отримати геолокацію.");
+    if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(
+            sendLocation,
+            () => alert("Не вдалося отримати геолокацію."),
+            {
+                enableHighAccuracy: true,
+                maximumAge: 5000,
+                timeout: 10000
+            }
+        );
+    }
 
-},
-
-{
-
-enableHighAccuracy:true,
-
-maximumAge:5000,
-
-timeout:10000
-
-}
-
-);
-
-}
+});
 
 
 document.getElementById("onlineBtn").onclick = () => {
@@ -518,66 +555,38 @@ db.ref("usersLocation/"+child.key).remove();
 
 let firstLocate=true;
 
+
 function sendLocation(position){
-document.getElementById("onlineBtn").onclick = async () => {
 
-    showLocation = !showLocation;
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
 
-    localStorage.setItem("showLocation", showLocation);
+    if(firstLocate){
+        map.setView([lat, lng], 12);
+        firstLocate = false;
+    }
 
-    document.getElementById("onlineBtn").innerHTML =
-        showLocation ? "🟢" : "🔴";
+    if(myMarker){
+        myMarker.setLatLng([lat, lng]);
+    }else{
+        myMarker = L.circleMarker([lat, lng], {
+            radius:8,
+            color:"#fff",
+            fillColor:"#2196f3",
+            fillOpacity:1
+        }).addTo(map);
+    }
 
-    await db.ref("usersLocation/" + USER_ID).update({
-        showLocation: showLocation
+    db.ref("usersLocation/" + USER_ID).set({
+        name: currentUserName,
+        lat: lat,
+        lng: lng,
+        online: true,
+        showLocation: showLocation,
+        lastUpdate: Date.now()
     });
 
-    console.log("showLocation =", showLocation);
-};
-
-const lat=position.coords.latitude;
-
-const lng=position.coords.longitude;
-
-if(firstLocate){
-
-map.setView([lat,lng],12);
-
-firstLocate=false;
-
 }
-
-if(myMarker){
-
-myMarker.setLatLng([lat,lng]);
-
-}else{
-
-myMarker=L.circleMarker([lat,lng],{
-
-radius:8,
-
-color:"#fff",
-
-fillColor:"#2196f3",
-
-fillOpacity:1
-
-}).addTo(map);
-
-}
-
-db.ref("usersLocation/"+USER_ID).set({
-    name: localStorage.getItem("userName") || "Водій",
-    lat,
-    lng,
-    online: true,
-    showLocation,
-    lastUpdate: Date.now()
-});
-
-}
-
 </script>
 
 </body>

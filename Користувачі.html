@@ -190,12 +190,17 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-firebase.initializeApp(firebaseConfig);
 
 
-const USER_ID="user_"+Math.random().toString(36).substr(2,9);
+let USER_ID = localStorage.getItem("USER_ID");
 
-let showLocation=true;
+if(!USER_ID){
+    USER_ID = "user_" + crypto.randomUUID();
+    localStorage.setItem("USER_ID", USER_ID);
+}
+
+let showLocation =
+localStorage.getItem("showLocation") !== "false";
 
 const map=L.map("map").setView([49.0,31.0],6);
 
@@ -333,55 +338,8 @@ loadUsers();
 
 let myMarker=null;
 
-function sendLocation(position){
+// тут вже НЕМАЄ sendLocation()
 
-const lat=position.coords.latitude;
-
-const lng=position.coords.longitude;
-
-if(myMarker){
-
-myMarker.setLatLng([lat,lng]);
-
-}else{
-
-myMarker=L.circleMarker(
-
-[lat,lng],
-
-{
-
-radius:8,
-
-color:"#fff",
-
-fillColor:"#2196f3",
-
-fillOpacity:1
-
-}
-
-).addTo(map);
-
-}
-
-db.ref("usersLocation/"+USER_ID).set({
-
-name:localStorage.getItem("userName")||"Водій",
-
-lat:lat,
-
-lng:lng,
-
-online:true,
-
-showLocation:showLocation,
-
-lastUpdate:Date.now()
-
-});
-
-}
 
 if(navigator.geolocation){
 
@@ -412,20 +370,23 @@ timeout:10000
 
 document.getElementById("onlineBtn").onclick=()=>{
 
-showLocation=!showLocation;
+    showLocation=!showLocation;
 
-db.ref(
+    localStorage.setItem(
+        "showLocation",
+        showLocation
+    );
 
-"usersLocation/"+USER_ID+"/showLocation"
+    db.ref("usersLocation/"+USER_ID).update({
+        showLocation:showLocation
+    });
 
-).set(showLocation);
-
-document.getElementById("onlineBtn").innerHTML=
-
-showLocation ? "🟢" : "🔴";
-
+    document.getElementById("onlineBtn").innerHTML =
+        showLocation ? "🟢" : "🔴";
 };
 
+document.getElementById("onlineBtn").innerHTML =
+showLocation ? "🟢" : "🔴";
 window.addEventListener(
 
 "beforeunload",
@@ -531,6 +492,22 @@ db.ref("usersLocation/"+child.key).remove();
 let firstLocate=true;
 
 function sendLocation(position){
+db.ref("usersLocation").once("value").then(snap=>{
+
+    snap.forEach(child=>{
+
+        const u = child.val();
+
+        if(
+            child.key !== USER_ID &&
+            u.name === (localStorage.getItem("userName")||"Водій")
+        ){
+            db.ref("usersLocation/"+child.key).remove();
+        }
+
+    });
+
+});
 
 const lat=position.coords.latitude;
 

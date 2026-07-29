@@ -362,6 +362,7 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 const points = [
+
   // ... всі інші точки
 ];
 
@@ -527,13 +528,26 @@ if (!approved) {
   
   const popupDiv = document.createElement('div');
   popupDiv.style.textAlign = 'center';
-  popupDiv.innerHTML = `
-<b style="color:#007bff;">${data.title}</b><br>
-${data.desc}<br><br>
+popupDiv.innerHTML = `
+<b style="color:#007bff;">
+${data.title}
+</b><br>
+
+${data.desc}<br>
+
+<div style="
+margin-top:6px;
+color:#666;
+font-size:13px;
+">
+👤 Автор: <b>${data.author || "Невідомий"}</b>
+</div>
+
+<br>
 
 ${data.approved
-    ? ""
-    : "<span style='color:#ff9800;font-weight:bold;'>⏳ Очікує підтвердження адміністратора</span>"
+? ""
+: "<span style='color:#ff9800;font-weight:bold;'>⏳ Очікує підтвердження адміністратора</span>"
 }
 `;
 
@@ -804,13 +818,20 @@ document.getElementById('addMarkerConfirm').onclick=()=>{
   const desc=document.getElementById('markerDesc').value.trim();
   if(!pendingLatLng||!title||!desc){ alert("Заповніть усі поля!"); return; }
 
-  const newData = {
+  // Отримуємо ім'я користувача
+const currentAuthor =
+      localStorage.getItem("userName") ||
+      localStorage.getItem("username") ||
+      localStorage.getItem("name") ||
+      "Анонім";
+
+const newData = {
     lat: pendingLatLng.lat,
     lng: pendingLatLng.lng,
     title,
     desc,
-    approved:isAdmin,
-    author:"user"
+    approved: isAdmin,
+    author: currentAuthor
 };
   const pushToFirebase=(data)=>{ db.ref('markers').push().set(data); }
 

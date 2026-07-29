@@ -78,12 +78,25 @@ grid-template-columns:1fr;
 }
 
 .card{
-height:95px;
-flex-direction:row;
-justify-content:flex-start;
-padding-left:25px;
-}
+background:white;
+border-radius:18px;
+height:130px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+box-shadow:0 6px 15px #0002;
+cursor:pointer;
+transition:.2s;
 
+-webkit-tap-highlight-color:transparent;
+
+/* Заборонити виділення тексту */
+user-select:none;
+-webkit-user-select:none;
+-moz-user-select:none;
+-ms-user-select:none;
+}
 .icon{
 width:60px;
 font-size:35px;
@@ -93,6 +106,18 @@ font-size:35px;
 margin-top:0;
 }
 
+}
+.card,
+.card *{
+    user-select:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+}
+
+*{
+    -webkit-tap-highlight-color:transparent;
+    -webkit-touch-callout:none;
 }
 
 </style>

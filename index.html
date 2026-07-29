@@ -8,6 +8,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -181,36 +182,33 @@ const auth = firebase.auth();
 
 function login(){
 
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-const email =
-document.getElementById("email").value;
+    auth.signInWithEmailAndPassword(email, password)
 
+    .then(async (userCredential) => {
 
-const password =
-document.getElementById("password").value;
+        const uid = userCredential.user.uid;
 
+        const snap = await db.ref("users/" + uid).once("value");
 
+        const user = snap.val();
 
-auth.signInWithEmailAndPassword(email,password)
+        if (user) {
+            localStorage.setItem("userName", user.name);
+            localStorage.setItem("userSurname", user.surname || "");
+        }
 
+        window.location.href = "Головна.html";
 
-.then(()=>{
+    })
 
+    .catch((error) => {
 
-window.location.href="Головна.html";
+        alert("Невірний Email або пароль");
 
-
-})
-
-
-.catch(error=>{
-
-
-alert("Невірний Email або пароль");
-
-
-});
-
+    });
 
 }
 

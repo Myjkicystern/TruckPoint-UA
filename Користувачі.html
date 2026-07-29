@@ -282,53 +282,96 @@ iconAnchor:[15,15]
 
 });
 
-const users={};
-const usersLayer=L.layerGroup().addTo(map);
+const userMarkers = {};
+const usersLayer = L.layerGroup().addTo(map);
 
 function loadUsers(){
 
 db.ref("usersLocation").on("value",snap=>{
 
-usersLayer.clearLayers();
+    const activeUsers = {};
 
-snap.forEach(child=>{
+    snap.forEach(child=>{
 
-const user=child.val();
+         const id = child.key;
+        const user = child.val();
 
-if(!user.showLocation) return;
+        if(!user.showLocation){
 
-
-const marker = L.marker(
-    [user.lat, user.lng],
-    {
-        icon: truckIcon
+    if(userMarkers[id]){
+        usersLayer.removeLayer(userMarkers[id]);
+        delete userMarkers[id];
     }
-);
 
-// Ім'я над іконкою
-marker.bindTooltip(user.name, {
-    permanent: true,
-    direction: "top",
-    offset: [0, -18],
-    className: "userLabel"
-});
+    return;
+}
 
-// Вікно при натисканні
-const status = user.online ? "🟢 Онлайн" : "⚪ Остання геолокація";
+        activeUsers[id] = true;
 
-marker.bindPopup(`
-<div style="text-align:center">
-<b>${user.name}</b>
-<br><br>
-${status}
-<br>
-🕒 ${new Date(user.lastUpdate).toLocaleString("uk-UA")}
-</div>
-`);
+        const status = user.online
+            ? "🟢 Онлайн"
+            : "⚪ Остання геолокація";
 
-marker.addTo(usersLayer);
+        if(userMarkers[id]){
 
-});
+            userMarkers[id].setLatLng([user.lat,user.lng]);
+
+            userMarkers[id].setTooltipContent(user.name);
+
+            userMarkers[id].setPopupContent(`
+            <div style="text-align:center">
+            <b>${user.name}</b><br><br>
+            ${status}<br>
+            🕒 ${new Date(user.lastUpdate).toLocaleString("uk-UA")}
+            </div>
+            `);
+
+        }else{
+if (
+    typeof user.lat !== "number" ||
+    typeof user.lng !== "number"
+) {
+    console.log("Некоректний запис:", id, user);
+    return;
+}
+            const marker = L.marker(
+                [user.lat,user.lng],
+                {icon:truckIcon}
+            );
+
+            marker.bindTooltip(user.name,{
+                permanent:true,
+                direction:"top",
+                offset:[0,-18],
+                className:"userLabel"
+            });
+
+            marker.bindPopup(`
+            <div style="text-align:center">
+            <b>${user.name}</b><br><br>
+            ${status}<br>
+            🕒 ${new Date(user.lastUpdate).toLocaleString("uk-UA")}
+            </div>
+            `);
+
+            marker.addTo(usersLayer);
+
+            userMarkers[id]=marker;
+        }
+
+    });
+
+    Object.keys(userMarkers).forEach(id=>{
+
+        if(!activeUsers[id]){
+
+            usersLayer.removeLayer(userMarkers[id]);
+
+            delete userMarkers[id];
+
+        }
+
+    });
 
 });
 
@@ -368,44 +411,28 @@ timeout:10000
 }
 
 
-document.getElementById("onlineBtn").onclick=()=>{
+document.getElementById("onlineBtn").onclick = () => {
 
-    showLocation=!showLocation;
+    showLocation = !showLocation;
 
-    localStorage.setItem(
-        "showLocation",
-        showLocation
-    );
-
-    db.ref("usersLocation/"+USER_ID).update({
-        showLocation:showLocation
-    });
+    localStorage.setItem("showLocation", showLocation);
 
     document.getElementById("onlineBtn").innerHTML =
         showLocation ? "🟢" : "🔴";
+
+    db.ref("usersLocation/" + USER_ID).update({
+        showLocation: showLocation
+    });
+
 };
 
 document.getElementById("onlineBtn").innerHTML =
 showLocation ? "🟢" : "🔴";
-window.addEventListener(
+window.addEventListener("beforeunload",()=>{
 
-"beforeunload",
-
-()=>{
-
-db.ref(
-
-"usersLocation/"+USER_ID
-
-).update({
-
-online:false
+    db.ref("usersLocation/"+USER_ID).remove();
 
 });
-
-}
-
-);
 /* ---------- Лічильник користувачів ---------- */
 
 const onlineControl = L.control({position:"topright"});
@@ -492,22 +519,21 @@ db.ref("usersLocation/"+child.key).remove();
 let firstLocate=true;
 
 function sendLocation(position){
-db.ref("usersLocation").once("value").then(snap=>{
+document.getElementById("onlineBtn").onclick = async () => {
 
-    snap.forEach(child=>{
+    showLocation = !showLocation;
 
-        const u = child.val();
+    localStorage.setItem("showLocation", showLocation);
 
-        if(
-            child.key !== USER_ID &&
-            u.name === (localStorage.getItem("userName")||"Водій")
-        ){
-            db.ref("usersLocation/"+child.key).remove();
-        }
+    document.getElementById("onlineBtn").innerHTML =
+        showLocation ? "🟢" : "🔴";
 
+    await db.ref("usersLocation/" + USER_ID).update({
+        showLocation: showLocation
     });
 
-});
+    console.log("showLocation =", showLocation);
+};
 
 const lat=position.coords.latitude;
 
@@ -542,19 +568,12 @@ fillOpacity:1
 }
 
 db.ref("usersLocation/"+USER_ID).set({
-
-name:localStorage.getItem("userName")||"Водій",
-
-lat,
-
-lng,
-
-online:true,
-
-showLocation,
-
-lastUpdate:Date.now()
-
+    name: localStorage.getItem("userName") || "Водій",
+    lat,
+    lng,
+    online: true,
+    showLocation,
+    lastUpdate: Date.now()
 });
 
 }

@@ -301,22 +301,18 @@ firebase.auth().onAuthStateChanged(user=>{
 
 if(!user){
 
-window.location.replace("index.html");
-alert(
-    "UID: " + user.uid +
-    "\nІм'я: " + (snapshot.val()?.name || "немає")
-);
+    window.location.replace("index.html");
 
 }
 
 else{
 
-   firebase.database().ref("users/" + user.uid).once("value").then(snapshot => {
-    alert("UID: " + user.uid);
-alert("Name: " + (snapshot.val()?.name || "немає"));
+  firebase.database().ref("users/" + user.uid).once("value").then(snapshot => {
+
 
 if (snapshot.exists()) {
     console.log(JSON.stringify(snapshot.val(), null, 2));
+console.log("Ім'я з localStorage:", localStorage.getItem("userName"));
 } else {
     console.log("Запис користувача відсутній");
 }

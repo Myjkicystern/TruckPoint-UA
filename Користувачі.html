@@ -409,30 +409,6 @@ auth.onAuthStateChanged(async (user) => {
     const lastLat = Number(localStorage.getItem("lastLat"));
 const lastLng = Number(localStorage.getItem("lastLng"));
 
-if (showLocation && !isNaN(lastLat) && !isNaN(lastLng)) {
-
-    db.ref("usersLocation/" + USER_ID).set({
-        name: currentUserName,
-        lat: lastLat,
-        lng: lastLng,
-        online: true,
-        showLocation: true,
-        lastUpdate: Date.now()
-    });
-
-    // одразу показати свій маркер
-    if (!myMarker) {
-        myMarker = L.circleMarker([lastLat, lastLng], {
-            radius: 8,
-            color: "#fff",
-            fillColor: "#2196f3",
-            fillOpacity: 1
-        }).addTo(map);
-
-        map.setView([lastLat, lastLng], 12);
-        firstLocate = false;
-    }
-}
 
 if (showLocation && navigator.geolocation) {
 
@@ -479,11 +455,7 @@ document.getElementById("onlineBtn").onclick = () => {
 
 document.getElementById("onlineBtn").innerHTML =
 showLocation ? "🟢" : "🔴";
-window.addEventListener("beforeunload",()=>{
 
-    db.ref("usersLocation/"+USER_ID).remove();
-
-});
 /* ---------- Лічильник користувачів ---------- */
 
 const onlineControl = L.control({position:"topright"});

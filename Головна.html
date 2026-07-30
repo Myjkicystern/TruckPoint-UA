@@ -398,6 +398,16 @@ function logout() {
 
 }
 
+firebase.auth().onAuthStateChanged(async (user) => {
+
+    console.log("UID:", user.uid);
+
+    const snap = await firebase.database().ref("users/" + user.uid).once("value");
+
+    console.log("Дані:", snap.val());
+
+});
+
 </script>
 
 

@@ -209,6 +209,14 @@ function login(){
 
 }
 
+const snap = await db.ref("users/" + uid).once("value");
+
+if (!snap.exists()) {
+    alert("Для цього акаунта не знайдено даних. Будь ласка, зареєструйтеся.");
+    await auth.signOut();
+    return;
+}
+
 </script>
 
 

@@ -258,6 +258,12 @@ async function register(){
 
 }
 
+const name = document.getElementById("name").value.trim();
+
+if (!name) {
+    alert("Введіть ім'я.");
+    return;
+}
 
 function logout(){
 

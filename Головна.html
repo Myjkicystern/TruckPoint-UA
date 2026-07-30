@@ -284,20 +284,11 @@ TruckPoint UA
 src="avatars/avatar1.png"
 style="width:90px;height:90px;border-radius:50%;border:4px solid #0d6efd;object-fit:cover;">
 <input
-    type="file"
-    id="avatarFile"
-    accept="image/*"
-    style="display:none"
-    onchange="uploadAvatar()">
-    <img id="avatarPreview"
-     src=""
-     style="
-     width:90px;
-     height:90px;
-     border-radius:50%;
-     object-fit:cover;
-     margin-top:15px;
-     border:3px solid #0d6efd;">
+type="file"
+id="avatarFile"
+accept="image/*"
+style="display:none"
+onchange="uploadAvatar()">
 
 <button onclick="document.getElementById('avatarFile').click()">
 📷 Обрати фото
@@ -387,8 +378,7 @@ firebase.initializeApp(firebaseConfig);
 }
 const auth = firebase.auth();
 const db = firebase.database();
-const storage = firebase.storage();
-
+let selectedAvatar = "";
 
 firebase.auth().onAuthStateChanged(user=>{
 
@@ -400,7 +390,6 @@ if(!user){
 
 }
 
-let selectedAvatar = "";
 
 db.ref("users/" + user.uid).once("value").then(snapshot=>{
 
@@ -411,6 +400,7 @@ let name = "Користувач";
 if(snapshot.exists()){
 
     const data = snapshot.val();
+    selectedAvatar = data.avatar || "avatars/avatar1.png";
 
 
     if(data.name && data.surname){
@@ -553,7 +543,8 @@ function updateHeader() {
 
             });
 
- const avatar = selectedAvatar || "";
+ const avatar =
+selectedAvatar || "avatars/avatar1.png";
 
 document.getElementById("userInfo").innerHTML = `
 <div style="display:flex;align-items:center;justify-content:center;gap:10px">
@@ -584,7 +575,6 @@ setInterval(updateHeader,10000);
 
 
 });
-let selectedAvatar = "avatar1.png";
 
 function openSettings(){
 
@@ -611,7 +601,7 @@ if(selectedAvatar){
             d.surname || "";
 
         selectedAvatar =
-            d.avatar || "avatar1.png";
+d.avatar || "";
             localStorage.setItem("userAvatar", selectedAvatar);
             if(selectedAvatar){
     document.getElementById("avatarPreview").src=selectedAvatar;
@@ -647,66 +637,7 @@ function logout() {
 
 }
 
-function saveName(){
 
-    const user = firebase.auth().currentUser;
-
-    if(!user) return;
-
-    const newName =
-        document.getElementById("newName").value.trim();
-
-    if(newName.length<2){
-
-        alert("Введіть ім'я");
-
-        return;
-
-    }
-
-    db.ref("users/"+user.uid).update({
-
-        name:newName
-
-    }).then(()=>{
-
-        localStorage.setItem("userName",newName);
-
-        const USER_ID = localStorage.getItem("USER_ID");
-
-        if(USER_ID){
-
-            db.ref("usersLocation/"+USER_ID).update({
-                name:newName
-            });
-
-        }
-
-        db.ref("friendCodes")
-        .orderByChild("uid")
-        .equalTo(user.uid)
-        .once("value")
-        .then(snapshot=>{
-
-            snapshot.forEach(item=>{
-
-                item.ref.update({
-                    name:newName
-                });
-
-            });
-
-        });
-
-        alert("✅ Ім'я змінено");
-
-        closeSettings();
-
-        location.reload();
-
-    });
-
-}
 function chooseAvatar(){
 
     const grid=document.getElementById("avatarsGrid");
@@ -778,6 +709,7 @@ function saveProfile(){
         localStorage.setItem("userName",name);
         localStorage.setItem("userSurname",surname);
         localStorage.setItem("userAvatar",selectedAvatar);
+        document.getElementById("avatarPreview").src = selectedAvatar;
 
         const USER_ID=localStorage.getItem("USER_ID");
 
@@ -817,37 +749,6 @@ function saveProfile(){
 
 }
 
-async function uploadAvatar(){
-
-    const file = document.getElementById("avatarFile").files[0];
-
-    if(!file) return;
-
-    try{
-
-        const user = firebase.auth().currentUser;
-
-        const ref = storage.ref("avatars/" + user.uid + ".jpg");
-
-        await ref.put(file);
-
-        const url = await ref.getDownloadURL();
-
-        selectedAvatar = url;
-
-        document.getElementById("avatarPreview").src = url;
-
-        console.log("Аватар завантажено:", url);
-
-    }catch(e){
-
-        console.error(e);
-
-        alert(e.message);
-
-    }
-
-}
 
 function uploadAvatar(){
 
@@ -876,6 +777,7 @@ function uploadAvatar(){
 
             selectedAvatar =
                 canvas.toDataURL("image/jpeg",0.8);
+                console.log(selectedAvatar);
 
             document.getElementById("avatarPreview").src =
                 selectedAvatar;

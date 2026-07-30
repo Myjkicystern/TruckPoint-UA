@@ -311,22 +311,46 @@ if(!user){
 db.ref("users/" + user.uid).once("value").then(snapshot=>{
 
 
-let name="Користувач";
+let name = "Користувач";
 
 
-if(snapshot.exists() && snapshot.val().name){
+if(snapshot.exists()){
 
-    name=snapshot.val().name;
+    const data = snapshot.val();
+
+
+    if(data.name && data.surname){
+
+        name = data.name + " " + data.surname;
+
+    }
+    else if(data.name){
+
+        name = data.name;
+
+    }
 
 }
 else if(localStorage.getItem("userName")){
 
-    name=localStorage.getItem("userName");
+    name = localStorage.getItem("userName") + " " +
+           (localStorage.getItem("userSurname") || "");
 
 }
 else if(user.displayName){
 
-    name=user.displayName;
+    name = user.displayName;
+
+}
+
+else if(localStorage.getItem("userName")){
+
+    name = localStorage.getItem("userName");
+
+}
+else if(user.displayName){
+
+    name = user.displayName;
 
 }
 

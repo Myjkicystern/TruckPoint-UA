@@ -217,53 +217,47 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-function register(){
+async function register(){
 
-    const name = document.getElementById("name").value;
-    const surname = document.getElementById("surname").value;
-    const phone = document.getElementById("phone").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    try{
 
+        const name = document.getElementById("name").value.trim();
+        const surname = document.getElementById("surname").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
 
-    auth.createUserWithEmailAndPassword(email,password)
-
-    .then((userCredential)=>{
+        const userCredential = await auth.createUserWithEmailAndPassword(email,password);
 
         const uid = userCredential.user.uid;
 
+        console.log("UID:", uid);
 
-        return db.ref("users/"+uid).set({
-
-            name:name,
-            surname:surname,
-            phone:phone,
-            email:email,
-            created:Date.now(),
-            admin:false
-
+        await db.ref("users/" + uid).set({
+            name,
+            surname,
+            phone,
+            email,
+            created: Date.now(),
+            admin: false
         });
 
+        console.log("✅ Записано в базу");
 
-    })
+        const test = await db.ref("users/" + uid).once("value");
+        console.log("Перевірка:", test.val());
 
-    .then(()=>{
+        alert("Успішно!");
 
+    }catch(err){
 
-   localStorage.setItem("registered","true");
+        console.error(err);
+        alert(err.message);
 
-alert("Ласкаво просимо до TruckPoint UA!");
-
-})
-
-    .catch(error=>{
-
-        alert(error.message);
-
-    });
-
+    }
 
 }
+
 
 function logout(){
 

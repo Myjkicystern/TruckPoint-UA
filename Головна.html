@@ -308,6 +308,15 @@ window.location.replace("index.html");
 else{
 
    firebase.database().ref("users/" + user.uid).once("value").then(snapshot => {
+    console.log("UID:", user.uid);
+console.log(snapshot.val());
+
+if (snapshot.exists()) {
+    console.log(snapshot.val().name);
+} else {
+    console.log("Запис користувача відсутній");
+}
+console.log("Ім'я з localStorage:", localStorage.getItem("userName"));
 
     let name = "Користувач";
 
@@ -385,14 +394,13 @@ function logout() {
 
     const user = auth.currentUser;
 
-    if (user) {
-        db.ref("online/" + user.uid).remove();
+    if (!user) {
+        window.location.replace("index.html");
+        return;
     }
 
-    auth.signOut().then(() => {
-        window.location.replace("Вхід.html");
-    }).catch((error) => {
-        console.error(error);
+    db.ref("online/" + user.uid).remove().finally(() => {
+        auth.signOut();
     });
 
 }

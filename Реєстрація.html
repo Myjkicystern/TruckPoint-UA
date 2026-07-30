@@ -241,7 +241,6 @@ async function register(){
 
         const uid = userCredential.user.uid;
 
-        console.log("UID:", uid);
 
         await db.ref("users/" + uid).set({
             name: name,
@@ -259,12 +258,12 @@ async function register(){
 
         window.location.replace("Головна.html");
 
-    } catch(err){
+        
+} catch(err){
 
-        console.error(err);
-        alert(err.message);
+    alert("Помилка реєстрації. Перевірте дані.");
 
-    }
+}
 
 }
 

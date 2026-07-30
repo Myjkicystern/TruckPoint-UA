@@ -178,7 +178,7 @@ auth.onAuthStateChanged((user) => {
 });
 
 
-function login(){
+function login() {
 
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
@@ -191,30 +191,27 @@ function login(){
 
         const snap = await db.ref("users/" + uid).once("value");
 
+        if (!snap.exists()) {
+            alert("Для цього акаунта не знайдено даних.");
+
+            await auth.signOut();
+            return;
+        }
+
         const user = snap.val();
 
-        if (user) {
-            localStorage.setItem("userName", user.name);
-            localStorage.setItem("userSurname", user.surname || "");
-        }
+        localStorage.setItem("userName", user.name || "");
+        localStorage.setItem("userSurname", user.surname || "");
 
         window.location.href = "Головна.html";
 
     })
 
-  .catch((error) => {
-    console.log(error);
-    alert(error.code + "\n" + error.message);
-});
+    .catch((error) => {
+        console.log(error);
+        alert(error.code + "\n" + error.message);
+    });
 
-}
-
-const snap = await db.ref("users/" + uid).once("value");
-
-if (!snap.exists()) {
-    alert("Для цього акаунта не знайдено даних. Будь ласка, зареєструйтеся.");
-    await auth.signOut();
-    return;
 }
 
 </script>

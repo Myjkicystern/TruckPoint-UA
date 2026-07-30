@@ -219,37 +219,47 @@ const db = firebase.database();
 
 async function register(){
 
+    const name = document.getElementById("name").value.trim();
+    const surname = document.getElementById("surname").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!name) {
+        alert("Введіть ім'я.");
+        return;
+    }
+
+    if (!email || !password) {
+        alert("Введіть Email та пароль.");
+        return;
+    }
+
     try{
 
-        const name = document.getElementById("name").value.trim();
-        const surname = document.getElementById("surname").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-
-        const userCredential = await auth.createUserWithEmailAndPassword(email,password);
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
 
         const uid = userCredential.user.uid;
 
         console.log("UID:", uid);
 
         await db.ref("users/" + uid).set({
-            name,
-            surname,
-            phone,
-            email,
-            created: Date.now(),
+            name: name,
+            surname: surname,
+            phone: phone,
+            email: email,
+            createdAt: firebase.database.ServerValue.TIMESTAMP,
             admin: false
         });
 
-        console.log("✅ Записано в базу");
+        localStorage.setItem("userName", name);
+        localStorage.setItem("userSurname", surname);
 
-        const test = await db.ref("users/" + uid).once("value");
-        console.log("Перевірка:", test.val());
+        alert("Ласкаво просимо до TruckPoint UA!");
 
-        alert("Успішно!");
+        window.location.replace("Головна.html");
 
-    }catch(err){
+    } catch(err){
 
         console.error(err);
         alert(err.message);
@@ -258,12 +268,6 @@ async function register(){
 
 }
 
-const name = document.getElementById("name").value.trim();
-
-if (!name) {
-    alert("Введіть ім'я.");
-    return;
-}
 
 function logout(){
 

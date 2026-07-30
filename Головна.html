@@ -299,89 +299,110 @@ const db = firebase.database();
 
 firebase.auth().onAuthStateChanged(user=>{
 
+
 if(!user){
 
     window.location.replace("index.html");
+    return;
 
 }
 
-else{
 
-  firebase.database().ref("users/" + user.uid).once("value").then(snapshot => {
+db.ref("users/" + user.uid).once("value").then(snapshot=>{
 
 
-if (snapshot.exists()) {
-    console.log(JSON.stringify(snapshot.val(), null, 2));
-console.log("Ім'я з localStorage:", localStorage.getItem("userName"));
-} else {
-    console.log("Запис користувача відсутній");
+let name="Користувач";
+
+
+if(snapshot.exists() && snapshot.val().name){
+
+    name=snapshot.val().name;
+
 }
-console.log("Ім'я з localStorage:", localStorage.getItem("userName"));
+else if(localStorage.getItem("userName")){
 
-    let name = "Користувач";
+    name=localStorage.getItem("userName");
 
-    if (snapshot.exists() && snapshot.val().name) {
-        name = snapshot.val().name;
-    } else if (localStorage.getItem("userName")) {
-        name = localStorage.getItem("userName");
-    }
+}
+else if(user.displayName){
 
-// Presence (онлайн тільки коли відкритий додаток)
+    name=user.displayName;
 
-const statusRef = firebase.database().ref("online/" + user.uid);
-const connectedRef = firebase.database().ref(".info/connected");
+}
 
-connectedRef.on("value", function(snap){
 
-    if(snap.val() === true){
+// онлайн
 
-        // якщо закрив сторінку - видалити статус
-        statusRef.onDisconnect().remove();
+const statusRef=db.ref("online/"+user.uid);
+const connectedRef=db.ref(".info/connected");
 
-        // записати онлайн
-        statusRef.set({
-            name: name,
-            time: firebase.database.ServerValue.TIMESTAMP
-        });
 
-    }
+connectedRef.on("value",snap=>{
+
+
+if(snap.val()===true){
+
+
+statusRef.onDisconnect().remove();
+
+
+statusRef.set({
+
+name:name,
+time:firebase.database.ServerValue.TIMESTAMP
 
 });
 
 
-    // Оновлюємо інформацію в шапці
-    function updateHeader(){
-
-        firebase.database().ref("users").once("value").then(usersSnap=>{
-
-            const usersCount = usersSnap.numChildren();
-
-            firebase.database().ref("online").once("value").then(onlineSnap=>{
-
-                const onlineCount = onlineSnap.numChildren();
-
-                document.getElementById("userInfo").innerHTML =
-                "👤 " + name +
-                "<br>👥 Користувачів: " + usersCount +
-                "<br>🟢 Онлайн: " + onlineCount;
-
-            });
-
-        });
-
-    }
-
-updateHeader();
-
-// Автоматично оновлювати онлайн
-    updateHeader();
+}
 
 
-}); // <-- закриває then(snapshot => {...})
+});
+
+
+
+// шапка
+
+function updateHeader(){
+
+
+db.ref("users").once("value").then(usersSnap=>{
+
+
+let usersCount=usersSnap.numChildren();
+
+
+db.ref("online").once("value").then(onlineSnap=>{
+
+
+let onlineCount=onlineSnap.numChildren();
+
+
+document.getElementById("userInfo").innerHTML=
+
+"👤 "+name+
+"<br>👥 Користувачів: "+usersCount+
+"<br>🟢 Онлайн: "+onlineCount;
+
+
+});
+
+
+});
+
 
 }
 
-}); // <-- закриває onAuthStateChanged
+
+updateHeader();
+
+setInterval(updateHeader,10000);
+
+
+});
+
+
+});
 
 function logout() {
 

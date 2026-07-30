@@ -12,6 +12,7 @@
 
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet/dist/leaflet.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -158,6 +159,321 @@ box-shadow:0 3px 10px rgba(0,0,0,.25);
 .userLabel:before{
     display:none;
 }
+
+
+
+#friendsSheet{
+
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+
+background:white;
+
+border-radius:24px 24px 0 0;
+
+box-shadow:0 -8px 30px rgba(0,0,0,.25);
+
+z-index:99999;
+
+height:220px;
+
+transform:translateY(185px);
+
+transition:transform .3s ease;
+
+touch-action:none;
+
+}
+
+
+#friendsSheet.open{
+
+transform:translateY(0);
+
+}
+
+
+#sheetHandle{
+
+height:40px;
+
+display:flex;
+justify-content:center;
+align-items:center;
+cursor:grab;
+    user-select:none;
+}
+
+
+#sheetHandle::before{
+cursor:grabbing;
+content:"";
+
+width:60px;
+height:6px;
+
+background:#aaa;
+
+border-radius:20px;
+
+}
+
+#sheetHandle::before{
+content:"";
+width:60px;
+height:6px;
+background:#bbb;
+border-radius:20px;
+}
+.sheetBtn{
+
+display:flex;
+align-items:center;
+gap:15px;
+
+padding:18px 22px;
+
+font-size:17px;
+font-weight:600;
+
+color:#222;
+
+transition:.2s;
+
+border-bottom:1px solid #f0f0f0;
+
+}
+
+.sheetBtn:last-child{
+border-bottom:none;
+}
+
+.sheetBtn:hover{
+background:#f7f9fc;
+}
+
+.sheetBtn:active{
+background:#eef4ff;
+}
+
+#friendModal{
+
+display:none;
+
+position:fixed;
+
+left:20px;
+right:20px;
+top:50%;
+
+transform:translateY(-50%);
+
+background:white;
+
+border-radius:20px;
+
+padding:25px;
+
+box-shadow:0 10px 40px rgba(0,0,0,.35);
+
+z-index:100000;
+
+font-family:Poppins;
+
+}
+
+
+#friendModal h3{
+
+margin-top:0;
+text-align:center;
+
+}
+
+
+.friendInput{
+
+width:100%;
+
+padding:12px;
+
+border-radius:12px;
+
+border:1px solid #ddd;
+
+font-size:16px;
+
+box-sizing:border-box;
+
+}
+
+
+.friendButton{
+
+width:100%;
+
+margin-top:12px;
+
+padding:14px;
+
+border-radius:15px;
+
+background:#0d6efd;
+
+color:white;
+
+font-size:16px;
+
+font-weight:600;
+
+}
+
+
+#closeFriend{
+
+background:#eee;
+
+color:#222;
+
+}
+
+#requestCount{
+
+background:#0d6efd;
+
+color:white;
+
+border-radius:20px;
+
+padding:3px 8px;
+
+font-size:12px;
+
+margin-left:auto;
+
+}
+#requestsModal{
+
+display:none;
+
+position:fixed;
+
+left:20px;
+right:20px;
+
+top:50%;
+
+transform:translateY(-50%);
+
+background:white;
+
+padding:25px;
+
+border-radius:20px;
+
+z-index:100001;
+
+box-shadow:0 10px 40px rgba(0,0,0,.35);
+
+font-family:Poppins;
+
+}
+
+
+.requestItem{
+
+padding:15px;
+
+border-bottom:1px solid #ddd;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+}
+
+
+.acceptBtn{
+
+background:#28a745;
+
+color:white;
+
+padding:8px 12px;
+
+border-radius:12px;
+
+}
+
+#friendsModal{
+
+display:none;
+
+position:fixed;
+
+left:20px;
+right:20px;
+
+top:50%;
+
+transform:translateY(-50%);
+
+background:white;
+
+padding:25px;
+
+border-radius:22px;
+
+z-index:100001;
+
+box-shadow:0 10px 40px rgba(0,0,0,.35);
+
+font-family:Poppins;
+
+}
+
+
+.friendItem{
+
+padding:15px;
+
+border-bottom:1px solid #eee;
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+font-weight:600;
+
+}
+
+
+.friendStatus{
+
+font-size:13px;
+
+color:#666;
+
+}
+
+
+.friendMapBtn{
+
+background:#0d6efd;
+
+color:white;
+
+border-radius:12px;
+
+padding:8px 12px;
+
+}
 </style>
 
 </head>
@@ -174,7 +490,90 @@ box-shadow:0 3px 10px rgba(0,0,0,.25);
 <button id="onlineBtn">
 🟢
 </button>
+<div id="friendsSheet">
 
+    <div id="sheetHandle"></div>
+
+   <div class="sheetBtn" id="addFriendBtn">
+    ➕ Додати друга
+</div>
+
+    <div class="sheetBtn" id="requestsBtn">
+    📥 Запити
+    <span id="requestCount"></span>
+</div>
+
+    <div class="sheetBtn" id="friendsBtn">
+    👥 Мої друзі
+</div>
+
+    <div class="sheetBtn">
+        ⚙️ Налаштування
+    </div>
+
+</div>
+<div id="friendModal">
+
+<h3>👥 Додати друга</h3>
+
+<p style="text-align:center">
+Ваш код для друзів:
+</p>
+<p style="text-align:center">
+Введіть код друга:
+</p>
+
+<input 
+class="friendInput" 
+id="friendCodeInput"
+placeholder="TRUCK-XXXXXX">
+
+<button 
+class="friendButton" 
+id="sendFriendRequest">
+📨 Надіслати запит
+</button>
+<input class="friendInput" id="myFriendCode" readonly>
+
+<button class="friendButton" id="shareFriend">
+📤 Надіслати через месенджери
+</button>
+
+<button class="friendButton" id="closeFriend">
+Закрити
+</button>
+
+</div>
+
+
+<div id="requestsModal">
+
+<h3>📥 Запити друзів</h3>
+
+<div id="requestsList">
+Немає нових запитів
+</div>
+
+<button class="friendButton" id="closeRequests">
+Закрити
+</button>
+
+</div>
+
+
+<div id="friendsModal">
+
+<h3>👥 Мої друзі</h3>
+
+<div id="friendsList">
+Немає друзів
+</div>
+
+<button class="friendButton" id="closeFriends">
+Закрити
+</button>
+
+</div>
 
 <script>
 
@@ -295,6 +694,25 @@ iconAnchor:[15,15]
 
 const userMarkers = {};
 const usersLayer = L.layerGroup().addTo(map);
+let myFriends = {};
+
+
+// завантаження списку друзів
+
+db.ref("friends/"+USER_ID).on("value",snap=>{
+
+    myFriends = {};
+
+    snap.forEach(friend=>{
+
+        myFriends[friend.key]=true;
+
+    });
+
+
+    loadUsers();
+
+});
 
 function loadUsers(){
 
@@ -302,10 +720,20 @@ db.ref("usersLocation").on("value",snap=>{
 
     const activeUsers = {};
 
-    snap.forEach(child=>{
+snap.forEach(child=>{
 
-         const id = child.key;
-        const user = child.val();
+const id = child.key;
+const user = child.val();
+
+
+// показуємо тільки себе і друзів
+
+if(
+id !== USER_ID &&
+!myFriends[id]
+){
+    return;
+}
 
         if(!user.showLocation){
 
@@ -552,6 +980,716 @@ localStorage.setItem("lastLng", lng);
     });
 
 }
+
+const friendsSheet = document.getElementById("friendsSheet");
+const sheetHandle = document.getElementById("sheetHandle");
+
+let startY = 0;
+let moved = false;
+
+
+// телефон
+sheetHandle.addEventListener("touchstart", function(e){
+
+    startY = e.touches[0].clientY;
+    moved = false;
+
+});
+
+
+sheetHandle.addEventListener("touchmove", function(e){
+
+    let y = e.touches[0].clientY;
+
+    let diff = startY - y;
+
+
+    if(Math.abs(diff)>20){
+        moved=true;
+    }
+
+
+    if(diff > 0){
+
+        friendsSheet.classList.add("open");
+
+    }
+
+    if(diff < -20){
+
+        friendsSheet.classList.remove("open");
+
+    }
+
+});
+
+
+// мишка
+sheetHandle.addEventListener("mousedown",function(e){
+
+    startY=e.clientY;
+    moved=false;
+
+
+});
+
+
+document.addEventListener("mousemove",function(e){
+
+    if(startY===0) return;
+
+
+    let diff=startY-e.clientY;
+
+
+    if(diff>20){
+
+        friendsSheet.classList.add("open");
+
+    }
+
+
+    if(diff<-20){
+
+        friendsSheet.classList.remove("open");
+
+    }
+
+});
+
+
+document.addEventListener("mouseup",function(){
+
+    startY=0;
+
+});
+
+const addFriendBtn =
+document.getElementById("addFriendBtn");
+
+
+const friendModal =
+document.getElementById("friendModal");
+
+
+addFriendBtn.onclick=function(){
+
+friendModal.style.display="block";
+
+friendsSheet.classList.remove("open");
+
+
+let code = localStorage.getItem("friendCode");
+
+
+if(!code){
+
+code =
+"TRUCK-" +
+Math.random()
+.toString(36)
+.substring(2,8)
+.toUpperCase();
+
+
+localStorage.setItem(
+"friendCode",
+code
+);
+
+
+// ✅ запис коду у Firebase
+db.ref("friendCodes/"+code).set({
+
+    uid: USER_ID,
+    name: currentUserName
+
+});
+
+
+}
+
+
+// якщо код вже був — просто оновлюємо Firebase
+else {
+
+db.ref("friendCodes/"+code).set({
+
+    uid: USER_ID,
+    name: currentUserName
+
+});
+
+}
+
+
+document.getElementById("myFriendCode").value=code;
+
+
+};
+
+
+// 📤 Надіслати через месенджери
+
+document.getElementById("shareFriend")
+.onclick=function(){
+
+
+let code =
+document.getElementById("myFriendCode").value;
+
+
+let text =
+"🚛 Додай мене в TruckPoint UA\n\n" +
+"Мій код друга: " + code;
+
+
+let url =
+"https://wa.me/?text=" +
+encodeURIComponent(text);
+
+
+// якщо телефон підтримує меню поширення
+
+if(navigator.share){
+
+navigator.share({
+
+title:"TruckPoint UA",
+
+text:text
+
+});
+
+}
+else{
+
+window.open(url,"_blank");
+
+}
+
+
+};
+
+
+
+document.getElementById("closeFriend")
+.onclick=function(){
+
+friendModal.style.display="none";
+
+};
+
+const requestsBtn =
+document.getElementById("requestsBtn");
+
+
+const requestsModal =
+document.getElementById("requestsModal");
+
+
+const requestsList =
+document.getElementById("requestsList");
+
+
+
+// відкриття запитів
+
+requestsBtn.onclick=function(){
+
+requestsModal.style.display="block";
+
+friendsSheet.classList.remove("open");
+
+
+loadRequests();
+
+};
+
+
+
+
+// завантаження запитів
+
+function loadRequests(){
+
+
+db.ref("friendRequests/"+USER_ID)
+.on("value",snap=>{
+
+
+requestsList.innerHTML="";
+
+
+if(!snap.exists()){
+
+requestsList.innerHTML=
+"Немає нових запитів";
+
+return;
+
+}
+
+
+
+snap.forEach(item=>{
+
+
+let req=item.val();
+
+let uid=item.key;
+
+
+
+let div=document.createElement("div");
+
+
+div.className="requestItem";
+
+
+div.innerHTML=`
+
+<span>
+👤 ${req.name}
+</span>
+
+
+<button class="acceptBtn">
+
+✅ Прийняти
+
+</button>
+
+`;
+
+
+
+div.querySelector("button")
+.onclick=function(){
+
+acceptFriend(uid,req.name);
+
+};
+
+
+
+requestsList.appendChild(div);
+
+
+
+});
+
+
+});
+
+
+}
+
+
+
+// прийняти друга
+
+function acceptFriend(uid,name){
+
+
+db.ref("friends/"+USER_ID+"/"+uid)
+.set(true);
+
+
+db.ref("friends/"+uid+"/"+USER_ID)
+.set(true);
+
+
+
+db.ref("friendRequests/"+USER_ID+"/"+uid)
+.remove();
+
+
+alert(
+"✅ "+name+" доданий у друзі"
+);
+
+
+}
+
+db.ref("friendRequests/"+USER_ID)
+.on("value",snap=>{
+
+
+let count=snap.numChildren();
+
+
+document.getElementById("requestCount")
+.innerHTML =
+count ? count : "";
+
+
+});
+
+
+
+db.ref("friends/"+USER_ID)
+.on("value",snap=>{
+
+
+friendsList.innerHTML="";
+
+
+if(!snap.exists()){
+
+friendsList.innerHTML=
+"Немає друзів";
+
+return;
+
+}
+
+
+
+snap.forEach(friend=>{
+
+
+let uid=friend.key;
+
+
+
+db.ref("usersLocation/"+uid)
+.once("value")
+.then(userSnap=>{
+
+
+let user=userSnap.val();
+
+
+
+if(!user){
+
+return;
+
+}
+
+
+
+let div=document.createElement("div");
+
+
+div.className="friendItem";
+
+
+div.innerHTML=`
+
+<div>
+
+👤 ${user.name}
+
+<br>
+
+<span class="friendStatus">
+
+${user.online ? 
+"🟢 Онлайн":"🔴 Офлайн"}
+
+</span>
+
+</div>
+
+
+<button class="friendMapBtn">
+
+📍
+
+</button>
+
+`;
+
+
+
+div.querySelector("button")
+.onclick=function(){
+
+
+if(user.lat && user.lng){
+
+
+map.setView(
+[user.lat,user.lng],
+15
+);
+
+
+if(userMarkers[uid]){
+
+userMarkers[uid]
+.openPopup();
+
+}
+
+
+}
+
+
+};
+
+
+
+friendsList.appendChild(div);
+
+
+
+});
+
+
+});
+
+
+
+});
+
+
+document.getElementById("closeFriends")
+.onclick=function(){
+
+friendsModal.style.display="none";
+
+};const friendsBtn =
+document.getElementById("friendsBtn");
+
+
+const friendsModal =
+document.getElementById("friendsModal");
+
+
+const friendsList =
+document.getElementById("friendsList");
+
+
+
+friendsBtn.onclick=function(){
+
+friendsModal.style.display="block";
+
+friendsSheet.classList.remove("open");
+
+loadFriends();
+
+};
+
+
+
+
+
+function loadFriends(){
+
+
+db.ref("friends/"+USER_ID)
+.on("value",snap=>{
+
+
+friendsList.innerHTML="";
+
+
+if(!snap.exists()){
+
+friendsList.innerHTML=
+"Немає друзів";
+
+return;
+
+}
+
+
+
+snap.forEach(friend=>{
+
+
+let uid=friend.key;
+
+
+
+db.ref("usersLocation/"+uid)
+.once("value")
+.then(userSnap=>{
+
+
+let user=userSnap.val();
+
+
+
+if(!user){
+
+return;
+
+}
+
+
+
+let div=document.createElement("div");
+
+
+div.className="friendItem";
+
+
+div.innerHTML=`
+
+<div>
+
+👤 ${user.name}
+
+<br>
+
+<span class="friendStatus">
+
+${user.online ? 
+"🟢 Онлайн":"🔴 Офлайн"}
+
+</span>
+
+</div>
+
+
+<button class="friendMapBtn">
+
+📍
+
+</button>
+
+`;
+
+
+
+div.querySelector("button")
+.onclick=function(){
+
+
+if(user.lat && user.lng){
+
+
+map.setView(
+[user.lat,user.lng],
+15
+);
+
+
+if(userMarkers[uid]){
+
+userMarkers[uid]
+.openPopup();
+
+}
+
+
+}
+
+
+};
+
+
+
+friendsList.appendChild(div);
+
+
+
+});
+
+
+});
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+document.getElementById("closeFriends")
+.onclick=function(){
+
+friendsModal.style.display="none";
+
+};
+
+document.getElementById("closeRequests")
+.onclick=function(){
+
+requestsModal.style.display="none";
+
+};
+
+document.getElementById("sendFriendRequest")
+.onclick=function(){
+
+let code =
+document.getElementById("friendCodeInput").value.trim();
+
+
+if(!code){
+
+alert("Введіть код друга");
+
+return;
+
+}
+
+
+// шукаємо власника коду
+
+db.ref("friendCodes/"+code)
+.once("value")
+.then(snap=>{
+
+
+if(!snap.exists()){
+
+alert("❌ Код не знайдено");
+
+return;
+
+}
+
+
+let friend = snap.val();
+
+
+// не можна додати самого себе
+
+if(friend.uid === USER_ID){
+
+alert("Це ваш власний код");
+
+return;
+
+}
+
+
+// створюємо запит
+
+db.ref(
+"friendRequests/"+friend.uid+"/"+USER_ID
+)
+.set({
+
+name: currentUserName,
+
+uid: USER_ID,
+
+date: Date.now()
+
+});
+
+
+alert(
+"✅ Запит надіслано "+friend.name
+);
+
+
+});
+
+};
 </script>
 </body>
 </html>

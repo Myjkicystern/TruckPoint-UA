@@ -326,13 +326,6 @@ console.log("Ім'я з localStorage:", localStorage.getItem("userName"));
         name = localStorage.getItem("userName");
     }
 
-// Записуємо користувача в базу (якщо його ще немає)
-if (!snapshot.exists()) {
-    firebase.database().ref("users/" + user.uid).set({
-        name: name,
-        createdAt: firebase.database.ServerValue.TIMESTAMP
-    });
-}
 // Presence (онлайн тільки коли відкритий додаток)
 
 const statusRef = firebase.database().ref("online/" + user.uid);

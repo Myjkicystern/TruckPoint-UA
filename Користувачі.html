@@ -319,9 +319,9 @@ db.ref("usersLocation").on("value",snap=>{
 
         activeUsers[id] = true;
 
-        const status = user.online
-            ? "🟢 Онлайн"
-            : "⚪ Остання геолокація";
+       const status = user.online
+    ? "🟢 Онлайн"
+    : "🔴 Офлайн";
 
         if(userMarkers[id]){
 
@@ -406,20 +406,34 @@ auth.onAuthStateChanged(async (user) => {
     const profile = snap.val();
 
     currentUserName = profile?.name || "Водій";
-    // Одразу показати користувача по останній відомій позиції
-const lastLat = localStorage.getItem("lastLat");
-const lastLng = localStorage.getItem("lastLng");
+    const lastLat = Number(localStorage.getItem("lastLat"));
+const lastLng = Number(localStorage.getItem("lastLng"));
 
-if (showLocation && lastLat && lastLng) {
+if (showLocation && !isNaN(lastLat) && !isNaN(lastLng)) {
+
     db.ref("usersLocation/" + USER_ID).set({
         name: currentUserName,
-        lat: Number(lastLat),
-        lng: Number(lastLng),
+        lat: lastLat,
+        lng: lastLng,
         online: true,
         showLocation: true,
         lastUpdate: Date.now()
     });
+
+    // одразу показати свій маркер
+    if (!myMarker) {
+        myMarker = L.circleMarker([lastLat, lastLng], {
+            radius: 8,
+            color: "#fff",
+            fillColor: "#2196f3",
+            fillOpacity: 1
+        }).addTo(map);
+
+        map.setView([lastLat, lastLng], 12);
+        firstLocate = false;
+    }
 }
+
 if (showLocation && navigator.geolocation) {
 
     navigator.geolocation.getCurrentPosition(
@@ -525,29 +539,6 @@ setInterval(updateOnlineCounter,5000);
 
 updateOnlineCounter();
 
-
-
-/* ---------- Видалення старих користувачів ---------- */
-
-setInterval(()=>{
-
-db.ref("usersLocation").once("value").then(snap=>{
-
-snap.forEach(child=>{
-
-const d=child.val();
-
-if(Date.now()-d.lastUpdate>120000){
-
-db.ref("usersLocation/"+child.key).remove();
-
-}
-
-});
-
-});
-
-},60000);
 
 
 

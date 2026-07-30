@@ -830,10 +830,19 @@ auth.onAuthStateChanged(async (user) => {
         return;
     }
 
-    const snap = await db.ref("users/" + user.uid).once("value");
-    const profile = snap.val();
+   const snap = await db.ref("users/" + user.uid).once("value");
+const profile = snap.val();
 
-    currentUserName = profile?.name || "Водій";
+if (profile) {
+    currentUserName =
+        ((profile.name || "") + " " + (profile.surname || "")).trim();
+
+    if (!currentUserName) {
+        currentUserName = "Водій";
+    }
+} else {
+    currentUserName = "Водій";
+}
     const lastLat = Number(localStorage.getItem("lastLat"));
 const lastLng = Number(localStorage.getItem("lastLng"));
 

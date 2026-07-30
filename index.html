@@ -204,11 +204,10 @@ function login(){
 
     })
 
-    .catch((error) => {
-
-        alert("Невірний Email або пароль");
-
-    });
+  .catch((error) => {
+    console.log(error);
+    alert(error.code + "\n" + error.message);
+});
 
 }
 

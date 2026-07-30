@@ -165,30 +165,16 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
+
 const auth = firebase.auth();
 const db = firebase.database();
 
 
-auth.onAuthStateChanged((user)=>{
 
-    if(user){
-
+auth.onAuthStateChanged((user) => {
+    if (user) {
         window.location.replace("Головна.html");
-
-    }else{
-
-        if(localStorage.getItem("registered")){
-
-            window.location.replace("Вхід.html");
-
-        }else{
-
-            window.location.replace("Реєстрація.html");
-
-        }
-
     }
-
 });
 
 
@@ -222,18 +208,6 @@ function login(){
 });
 
 }
-
-
-
-
-// якщо користувач вже увійшов
-
-if(user){
-
-window.location.href="Головна.html";
-
-}
-
 
 </script>
 

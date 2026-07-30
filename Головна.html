@@ -312,7 +312,7 @@ else{
 console.log(snapshot.val());
 
 if (snapshot.exists()) {
-    console.log(snapshot.val().name);
+    console.log(JSON.stringify(snapshot.val(), null, 2));
 } else {
     console.log("Запис користувача відсутній");
 }

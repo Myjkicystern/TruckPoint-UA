@@ -293,7 +293,8 @@ if(!firebase.apps.length){
 firebase.initializeApp(firebaseConfig);
 
 }
-
+const auth = firebase.auth();
+const db = firebase.database();
 
 
 firebase.auth().onAuthStateChanged(user=>{
@@ -380,16 +381,18 @@ updateHeader();
 
 }); // <-- закриває onAuthStateChanged
 
-function logout(){
+function logout() {
 
-    const user = firebase.auth().currentUser;
+    const user = auth.currentUser;
 
-    if(user){
-        firebase.database().ref("online/" + user.uid).remove();
+    if (user) {
+        db.ref("online/" + user.uid).remove();
     }
 
-    firebase.auth().signOut().then(()=>{
-        window.location.replace("index.html");
+    auth.signOut().then(() => {
+        window.location.replace("Вхід.html");
+    }).catch((error) => {
+        console.error(error);
     });
 
 }

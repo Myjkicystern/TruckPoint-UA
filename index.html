@@ -153,32 +153,42 @@ TruckPoint UA
 
 <script>
 
-
 const firebaseConfig = {
-
-apiKey: "AIzaSyAzOpcu7kdg0y8xwqD0oKk4eMfFSK946n4",
-
-authDomain: "truckpoint-ua.firebaseapp.com",
-
-databaseURL: "https://truckpoint-ua-default-rtdb.firebaseio.com",
-
-projectId: "truckpoint-ua",
-
-storageBucket: "truckpoint-ua.firebasestorage.app",
-
-messagingSenderId: "992372126132",
-
-appId: "1:992372126132:web:3378b6b1794066132d42e1"
-
+  apiKey: "AIzaSyAzOpcu7kdg0y8xwqD0oKk4eMfFSK946n4",
+  authDomain: "truckpoint-ua.firebaseapp.com",
+  databaseURL: "https://truckpoint-ua-default-rtdb.firebaseio.com",
+  projectId: "truckpoint-ua",
+  storageBucket: "truckpoint-ua.firebasestorage.app",
+  messagingSenderId: "992372126132",
+  appId: "1:992372126132:web:3378b6b1794066132d42e1"
 };
 
-
 firebase.initializeApp(firebaseConfig);
-
 
 const auth = firebase.auth();
 const db = firebase.database();
 
+auth.onAuthStateChanged((user)=>{
+
+    if(user){
+
+        window.location.replace("Головна.html");
+
+    }else{
+
+        if(localStorage.getItem("registered")){
+
+            window.location.replace("Вхід.html");
+
+        }else{
+
+            window.location.replace("Реєстрація.html");
+
+        }
+
+    }
+
+});
 
 
 function login(){
@@ -228,6 +238,11 @@ window.location.href="Головна.html";
 
 });
 
+if (!localStorage.getItem("registered")) {
+    window.location.replace("Реєстрація.html");
+} else {
+    window.location.replace("Вхід.html");
+}
 
 </script>
 

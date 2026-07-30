@@ -191,17 +191,14 @@ function login() {
 
         const snap = await db.ref("users/" + uid).once("value");
 
-        if (!snap.exists()) {
-            alert("Для цього акаунта не знайдено даних.");
+   if (snap.exists()) {
 
-            await auth.signOut();
-            return;
-        }
+    const user = snap.val();
 
-        const user = snap.val();
+    localStorage.setItem("userName", user.name || "");
+    localStorage.setItem("userSurname", user.surname || "");
 
-        localStorage.setItem("userName", user.name || "");
-        localStorage.setItem("userSurname", user.surname || "");
+}
 
         window.location.href = "Головна.html";
 

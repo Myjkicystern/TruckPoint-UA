@@ -1556,39 +1556,38 @@ ${user.online ?
 </div>
 
 
-<button class="friendMapBtn">
-
-📍
-
-</button>
+<div style="display:flex;gap:8px">
+    <button class="friendMapBtn">📍</button>
+    <button class="friendMapBtn removeFriendBtn"
+        style="background:#dc3545">🗑️</button>
+</div>
 
 `;
 
 
 
-div.querySelector("button")
-.onclick=function(){
+const buttons = div.querySelectorAll("button");
 
+buttons[0].onclick = function(){
 
-if(user.lat && user.lng){
+    if(user.lat && user.lng){
 
+        map.setView([user.lat,user.lng],15);
 
-map.setView(
-[user.lat,user.lng],
-15
-);
+        if(userMarkers[uid]){
+            userMarkers[uid].openPopup();
+        }
 
+    }
 
-if(userMarkers[uid]){
+};
 
-userMarkers[uid]
-.openPopup();
+buttons[1].onclick = function(){
 
-}
+    if(!confirm("Видалити друга " + user.name + "?")) return;
 
-
-}
-
+    db.ref("friends/"+USER_ID+"/"+uid).remove();
+    db.ref("friends/"+uid+"/"+USER_ID).remove();
 
 };
 

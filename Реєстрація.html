@@ -253,6 +253,9 @@ await db.ref("users/" + uid).set({
     admin: false
 });
 
+const check = await db.ref("users/" + uid).once("value");
+console.log("Запис після створення:", check.val());
+
 console.log("Запис users успішний");
 
         localStorage.setItem("userName", name);
@@ -265,7 +268,8 @@ console.log("Запис users успішний");
 
 } catch(err){
 
-    alert("Помилка реєстрації. Перевірте дані.");
+    console.error(err);
+    alert(err.code + "\n" + err.message);
 
 }
 
@@ -282,15 +286,6 @@ function logout(){
 
 }
 
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        db.ref("users/" + user.uid).once("value").then((snap) => {
-            if (snap.exists()) {
-                window.location.replace("Головна.html");
-            }
-        });
-    }
-});
 
 </script>
 </body>

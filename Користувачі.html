@@ -971,14 +971,21 @@ localStorage.setItem("lastLng", lng);
         }).addTo(map);
     }
 
-    db.ref("usersLocation/" + USER_ID).set({
-        name: currentUserName,
-        lat: lat,
-        lng: lng,
-        online: true,
-        showLocation: showLocation,
-        lastUpdate: Date.now()
-    });
+ db.ref("users/" + user.uid).once("value").then(snap => {
+
+    const profile = snap.val() || {};
+
+db.ref("usersLocation/" + USER_ID).set({
+    name: currentUserName,
+    avatar: localStorage.getItem("userAvatar") || "",
+    lat: lat,
+    lng: lng,
+    online: true,
+    showLocation: showLocation,
+    lastUpdate: Date.now()
+});
+
+});
 
 }
 
@@ -1360,6 +1367,8 @@ db.ref("usersLocation/"+uid)
 
 
 let user=userSnap.val();
+const avatar =
+    user.avatar || "avatars/avatar1.png";
 
 
 
@@ -1379,18 +1388,28 @@ div.className="friendItem";
 
 div.innerHTML=`
 
+<div style="display:flex;align-items:center;gap:12px">
+
+<img src="${avatar}"
+style="
+width:50px;
+height:50px;
+border-radius:50%;
+object-fit:cover;
+border:2px solid #0d6efd;
+">
+
 <div>
 
-👤 ${user.name}
+<b>${user.name}</b>
 
 <br>
 
 <span class="friendStatus">
-
-${user.online ? 
-"🟢 Онлайн":"🔴 Офлайн"}
-
+${user.online ? "🟢 Онлайн" : "🔴 Офлайн"}
 </span>
+
+</div>
 
 </div>
 
@@ -1512,66 +1531,7 @@ db.ref("usersLocation/"+uid)
 .then(userSnap=>{
 
 
-let user=userSnap.val();
-
-
-
-if(!user){
-
-return;
-
-}
-
-
-
-let div=document.createElement("div");
-
-
-div.className="friendItem";
-
-
-const avatar = user.avatar || "avatars/avatar1.png";
-
-div.innerHTML = `
-
-<div style="display:flex;align-items:center;gap:12px;">
-
-    <img src="${avatar}"
-    style="
-        width:52px;
-        height:52px;
-        border-radius:50%;
-        object-fit:cover;
-        border:2px solid #0d6efd;
-        background:#eee;
-    ">
-
-    <div>
-
-        <b>${user.name}</b>
-
-        <br>
-
-        <span class="friendStatus">
-            ${user.online ? "🟢 Онлайн" : "🔴 Офлайн"}
-        </span>
-
-    </div>
-
-</div>
-
-<div style="display:flex;gap:8px">
-
-    <button class="friendMapBtn">📍</button>
-
-    <button class="friendMapBtn removeFriendBtn"
-        style="background:#dc3545">
-        🗑️
-    </button>
-
-</div>
-
-`;
+loadFriends
 
 
 

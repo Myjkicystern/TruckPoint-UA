@@ -335,6 +335,15 @@ else if(user.displayName){
 
 const statusRef=db.ref("online/"+user.uid);
 const connectedRef=db.ref(".info/connected");
+let USER_ID = localStorage.getItem("USER_ID");
+
+if (!USER_ID) {
+    USER_ID = "user_" + crypto.randomUUID();
+    localStorage.setItem("USER_ID", USER_ID);
+}
+
+const showLocation =
+    localStorage.getItem("showLocation") !== "false";
 
 
 connectedRef.on("value",snap=>{
@@ -344,7 +353,12 @@ if(snap.val()===true){
 
 
 statusRef.onDisconnect().remove();
-
+db.ref("usersLocation/" + USER_ID)
+    .onDisconnect()
+    .update({
+        online: false,
+        lastUpdate: firebase.database.ServerValue.TIMESTAMP
+    });
 
 statusRef.set({
 
@@ -352,6 +366,37 @@ name:name,
 time:firebase.database.ServerValue.TIMESTAMP
 
 });
+if (showLocation && navigator.geolocation) {
+
+    navigator.geolocation.getCurrentPosition((position)=>{
+
+        db.ref("usersLocation/" + USER_ID).set({
+
+            name: name,
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            online: true,
+            showLocation: true,
+            lastUpdate: Date.now()
+
+        });
+
+    });
+
+    navigator.geolocation.watchPosition((position)=>{
+
+        db.ref("usersLocation/" + USER_ID).update({
+
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            online: true,
+            lastUpdate: Date.now()
+
+        });
+
+    });
+
+}
 
 
 }

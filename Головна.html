@@ -302,6 +302,10 @@ firebase.auth().onAuthStateChanged(user=>{
 if(!user){
 
 window.location.replace("index.html");
+alert(
+    "UID: " + user.uid +
+    "\nІм'я: " + (snapshot.val()?.name || "немає")
+);
 
 }
 
@@ -398,15 +402,6 @@ function logout() {
 
 }
 
-firebase.auth().onAuthStateChanged(async (user) => {
-
-    console.log("UID:", user.uid);
-
-    const snap = await firebase.database().ref("users/" + user.uid).once("value");
-
-    console.log("Дані:", snap.val());
-
-});
 
 </script>
 

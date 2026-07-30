@@ -132,7 +132,42 @@ header{
 }
 
 }
+#toast{
+    position:fixed;
+    left:50%;
+    bottom:30px;
+    transform:translateX(-50%) translateY(100px);
+    min-width:260px;
+    max-width:90%;
+    padding:16px 22px;
+    border-radius:16px;
+    color:#fff;
+    font-size:15px;
+    font-weight:600;
+    text-align:center;
+    background:#1f2937;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+    opacity:0;
+    transition:.35s;
+    z-index:99999;
+}
 
+#toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+}
+
+#toast.success{
+    background:linear-gradient(135deg,#10b981,#059669);
+}
+
+#toast.error{
+    background:linear-gradient(135deg,#ef4444,#dc2626);
+}
+
+#toast.info{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+}
 </style>
 
 </head>
@@ -201,6 +236,7 @@ header{
 <p>© 2026 TruckPoint UA</p>
 
 </footer>
+<div id="toast"></div>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyAzOpcu7kdg0y8xwqD0oKk4eMfFSK946n4",
@@ -286,7 +322,23 @@ function logout(){
 
 }
 
+function showToast(text, type = "info"){
 
+    const toast = document.getElementById("toast");
+
+    toast.className = "";
+    toast.classList.add(type);
+    toast.classList.add("show");
+
+    toast.innerHTML = text;
+
+    clearTimeout(window.toastTimer);
+
+    window.toastTimer = setTimeout(()=>{
+        toast.classList.remove("show");
+    },3000);
+
+}
 </script>
 </body>
 </html>

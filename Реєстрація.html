@@ -250,15 +250,13 @@ function register(){
     .then(()=>{
 
 
-        alert("Реєстрація успішна! Тепер увійдіть.");
+   localStorage.setItem("registered","true");
 
-        auth.signOut();
+alert("Ласкаво просимо до TruckPoint UA!");
 
-        window.location.href="Вхід.html";
+window.location.replace("Головна.html");
 
-
-    })
-
+})
 
     .catch(error=>{
 
@@ -269,19 +267,18 @@ function register(){
 
 }
 
+window.location.replace("Головна.html");
 
-function logout() {
-    auth.signOut()
-        .then(() => {
-            console.log("Вихід успішний");
-            alert("Ви вийшли з акаунта");
-            window.location.href = "Вхід.html?login";
-        })
-        .catch((error) => {
-            console.error(error);
-            alert(error.message);
-        });
+function logout(){
+
+    auth.signOut().then(()=>{
+
+        window.location.replace("Вхід.html");
+
+    });
+
 }
+
 window.onload = function () {
 
     const params = new URLSearchParams(window.location.search);
@@ -293,6 +290,8 @@ window.onload = function () {
     }
 
 };
+
+
 </script>
 </body>
 </html>

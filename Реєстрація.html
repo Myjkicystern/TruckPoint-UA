@@ -242,14 +242,18 @@ async function register(){
         const uid = userCredential.user.uid;
 
 
-        await db.ref("users/" + uid).set({
-            name: name,
-            surname: surname,
-            phone: phone,
-            email: email,
-            createdAt: firebase.database.ServerValue.TIMESTAMP,
-            admin: false
-        });
+  console.log("Починаю запис у users...");
+
+await db.ref("users/" + uid).set({
+    name: name,
+    surname: surname,
+    phone: phone,
+    email: email,
+    createdAt: firebase.database.ServerValue.TIMESTAMP,
+    admin: false
+});
+
+console.log("Запис users успішний");
 
         localStorage.setItem("userName", name);
         localStorage.setItem("userSurname", surname);
@@ -258,7 +262,7 @@ async function register(){
 
         window.location.replace("Головна.html");
 
-        
+
 } catch(err){
 
     alert("Помилка реєстрації. Перевірте дані.");

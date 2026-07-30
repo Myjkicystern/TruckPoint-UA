@@ -168,6 +168,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
+
 auth.onAuthStateChanged((user)=>{
 
     if(user){
@@ -226,8 +227,6 @@ function login(){
 
 
 // якщо користувач вже увійшов
-auth.onAuthStateChanged((user)=>{
-
 
 if(user){
 
@@ -235,14 +234,6 @@ window.location.href="Головна.html";
 
 }
 
-
-});
-
-if (!localStorage.getItem("registered")) {
-    window.location.replace("Реєстрація.html");
-} else {
-    window.location.replace("Вхід.html");
-}
 
 </script>
 

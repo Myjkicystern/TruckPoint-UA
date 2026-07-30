@@ -251,7 +251,6 @@ function register(){
 
 
    localStorage.setItem("registered","true");
-   window.location.replace("Головна.html");
 
 alert("Ласкаво просимо до TruckPoint UA!");
 
@@ -266,8 +265,6 @@ alert("Ласкаво просимо до TruckPoint UA!");
 
 }
 
-window.location.replace("Головна.html");
-
 function logout(){
 
     auth.signOut().then(()=>{
@@ -278,18 +275,15 @@ function logout(){
 
 }
 
-window.onload = function () {
-
-    const params = new URLSearchParams(window.location.search);
-
-    if (params.has("login")) {
-        showLogin();
-
-        document.getElementById("registerTab").style.display = "none";
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        db.ref("users/" + user.uid).once("value").then((snap) => {
+            if (snap.exists()) {
+                window.location.replace("Головна.html");
+            }
+        });
     }
-
-};
-
+});
 
 </script>
 </body>

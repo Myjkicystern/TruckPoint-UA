@@ -9,6 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -254,6 +255,11 @@ TruckPoint UA
     <div class="title">Додати коментар</div>
 </div>
 
+<div class="card" onclick="openSettings()">
+<div class="icon">⚙️</div>
+<div class="title">Налаштування</div>
+</div>
+
 <div class="card" onclick="logout()">
 <div class="icon">🚪</div>
 <div class="title">Вийти</div>
@@ -264,7 +270,84 @@ TruckPoint UA
 
 </div>
 
+<div id="settingsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);justify-content:center;align-items:center;z-index:9999;">
 
+<div style="background:#fff;width:92%;max-width:380px;border-radius:20px;padding:20px;box-shadow:0 10px 35px rgba(0,0,0,.25);max-height:90vh;overflow:auto;">
+
+<h2 style="text-align:center;margin-bottom:15px;color:#0d6efd;">
+⚙️ Налаштування
+</h2>
+
+<div style="text-align:center;margin-bottom:18px;">
+
+<img id="avatarPreview"
+src="avatars/avatar1.png"
+style="width:90px;height:90px;border-radius:50%;border:4px solid #0d6efd;object-fit:cover;">
+<input
+    type="file"
+    id="avatarFile"
+    accept="image/*"
+    onchange="uploadAvatar()"
+    style="display:none;">
+
+<button onclick="document.getElementById('avatarFile').click()">
+📷 Обрати фото
+</button>
+
+<br><br>
+
+<button onclick="chooseAvatar()"
+style="background:#0d6efd;color:#fff;border:none;padding:10px 18px;border-radius:10px;cursor:pointer;">
+🖼️ Змінити аватар
+</button>
+
+</div>
+
+<label><b>Ім'я</b></label>
+
+<input id="newName"
+type="text"
+style="width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;margin:8px 0 15px;">
+
+<label><b>Прізвище</b></label>
+
+<input id="newSurname"
+type="text"
+style="width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;margin:8px 0 20px;">
+
+<button onclick="saveProfile()"
+style="width:100%;padding:13px;background:#0d6efd;color:white;border:none;border-radius:12px;font-size:16px;font-weight:bold;">
+💾 Зберегти
+</button>
+
+<button onclick="closeSettings()"
+style="width:100%;padding:13px;background:#ececec;border:none;border-radius:12px;font-size:16px;margin-top:10px;">
+❌ Закрити
+</button>
+
+</div>
+
+</div>
+<div id="avatarSelect" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);justify-content:center;align-items:center;z-index:10000;">
+
+<div style="background:white;border-radius:20px;padding:20px;width:92%;max-width:420px;">
+
+<h3 style="text-align:center;margin-bottom:15px;">
+🖼️ Оберіть аватар
+</h3>
+
+<div id="avatarsGrid"
+style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+</div>
+
+<button onclick="closeAvatarPicker()"
+style="width:100%;margin-top:20px;padding:12px;border:none;border-radius:10px;background:#ddd;">
+Закрити
+</button>
+
+</div>
+
+</div>
 
 <script>
 
@@ -295,6 +378,7 @@ firebase.initializeApp(firebaseConfig);
 }
 const auth = firebase.auth();
 const db = firebase.database();
+const storage = firebase.storage();
 
 
 firebase.auth().onAuthStateChanged(user=>{
@@ -459,10 +543,38 @@ function updateHeader() {
 
             });
 
-            document.getElementById("userInfo").innerHTML =
-                "👤 " + name +
-                "<br>👥 Користувачів: " + usersCount +
-                "<br>🟢 Онлайн: " + onlineCount;
+            const avatar =
+    selectedAvatar || "avatar1.png";
+
+document.getElementById("userInfo").innerHTML =
+`
+<div style="display:flex;align-items:center;justify-content:center;gap:12px;">
+
+<img src="avatars/${avatar}"
+style="
+width:52px;
+height:52px;
+border-radius:50%;
+border:3px solid white;
+object-fit:cover;
+">
+
+<div>
+
+<div style="font-size:17px;font-weight:600;">
+${name}
+</div>
+
+<div style="font-size:13px;">
+👥 ${usersCount}
+&nbsp;&nbsp;
+🟢 ${onlineCount}
+</div>
+
+</div>
+
+</div>
+`;
 
         });
 
@@ -480,7 +592,45 @@ setInterval(updateHeader,10000);
 
 
 });
+let selectedAvatar = "avatar1.png";
 
+function openSettings(){
+
+    const user = firebase.auth().currentUser;
+
+    if(!user) return;
+
+    db.ref("users/"+user.uid).once("value").then(snap=>{
+
+        const d = snap.val() || {};
+
+        document.getElementById("newName").value =
+            d.name || "";
+
+        document.getElementById("newSurname").value =
+            d.surname || "";
+
+        selectedAvatar =
+            d.avatar || "avatar1.png";
+            localStorage.setItem("userAvatar", selectedAvatar);
+            if(selectedAvatar){
+    document.getElementById("avatarPreview").src=selectedAvatar;
+}
+
+        document.getElementById("avatarPreview").src =
+            "avatars/" + selectedAvatar;
+
+        document.getElementById("settingsModal").style.display="flex";
+
+    });
+
+}
+
+function closeSettings(){
+
+    document.getElementById("settingsModal").style.display="none";
+
+}
 function logout() {
 
     const USER_ID = localStorage.getItem("USER_ID");
@@ -498,7 +648,220 @@ function logout() {
 
 }
 
+function openSettings(){
 
+    const user = firebase.auth().currentUser;
+
+    if(!user) return;
+
+    db.ref("users/"+user.uid+"/name").once("value").then(snap=>{
+
+        document.getElementById("newName").value =
+            snap.exists() ? snap.val() : "";
+
+        document.getElementById("settingsModal").style.display="flex";
+
+    });
+
+}
+
+function closeSettings(){
+
+    document.getElementById("settingsModal").style.display="none";
+
+}
+
+function saveName(){
+
+    const user = firebase.auth().currentUser;
+
+    if(!user) return;
+
+    const newName =
+        document.getElementById("newName").value.trim();
+
+    if(newName.length<2){
+
+        alert("Введіть ім'я");
+
+        return;
+
+    }
+
+    db.ref("users/"+user.uid).update({
+
+        name:newName
+
+    }).then(()=>{
+
+        localStorage.setItem("userName",newName);
+
+        const USER_ID = localStorage.getItem("USER_ID");
+
+        if(USER_ID){
+
+            db.ref("usersLocation/"+USER_ID).update({
+                name:newName
+            });
+
+        }
+
+        db.ref("friendCodes")
+        .orderByChild("uid")
+        .equalTo(user.uid)
+        .once("value")
+        .then(snapshot=>{
+
+            snapshot.forEach(item=>{
+
+                item.ref.update({
+                    name:newName
+                });
+
+            });
+
+        });
+
+        alert("✅ Ім'я змінено");
+
+        closeSettings();
+
+        location.reload();
+
+    });
+
+}
+function chooseAvatar(){
+
+    const grid=document.getElementById("avatarsGrid");
+
+    grid.innerHTML="";
+
+    for(let i=1;i<=10;i++){
+
+        const img=document.createElement("img");
+
+        img.src="avatars/avatar"+i+".png";
+
+        img.style.width="70px";
+        img.style.height="70px";
+        img.style.borderRadius="50%";
+        img.style.cursor="pointer";
+        img.style.border="3px solid transparent";
+
+        img.onclick=function(){
+
+            selectedAvatar="avatar"+i+".png";
+
+            document.getElementById("avatarPreview").src=this.src;
+
+            closeAvatarPicker();
+
+        };
+
+        grid.appendChild(img);
+
+    }
+
+    document.getElementById("avatarSelect").style.display="flex";
+
+}
+
+function closeAvatarPicker(){
+
+    document.getElementById("avatarSelect").style.display="none";
+
+}
+
+function saveProfile(){
+
+    const user=firebase.auth().currentUser;
+
+    if(!user) return;
+
+    const name=document.getElementById("newName").value.trim();
+
+    const surname=document.getElementById("newSurname").value.trim();
+
+    if(name.length<2){
+
+        alert("Введіть ім'я");
+
+        return;
+
+    }
+
+    db.ref("users/"+user.uid).update({
+
+        name:name,
+        surname:surname,
+        avatar:selectedAvatar
+
+    }).then(()=>{
+
+        localStorage.setItem("userName",name);
+        localStorage.setItem("userSurname",surname);
+        localStorage.setItem("userAvatar",selectedAvatar);
+
+        const USER_ID=localStorage.getItem("USER_ID");
+
+        if(USER_ID){
+
+            db.ref("usersLocation/"+USER_ID).update({
+
+                name:name+" "+surname
+
+            });
+
+        }
+
+        db.ref("friendCodes")
+        .orderByChild("uid")
+        .equalTo(user.uid)
+        .once("value")
+        .then(snapshot=>{
+
+            snapshot.forEach(child=>{
+
+                child.ref.update({
+
+                    name:name+" "+surname
+
+                });
+
+            });
+
+        });
+
+        closeSettings();
+
+        updateHeader();
+
+    });
+
+}
+
+async function uploadAvatar(){
+
+    const file=document.getElementById("avatarFile").files[0];
+
+    if(!file) return;
+
+    const user=firebase.auth().currentUser;
+
+    if(!user) return;
+
+    const ref=storage.ref("avatars/"+user.uid);
+
+    await ref.put(file);
+
+    const url=await ref.getDownloadURL();
+
+    document.getElementById("avatarPreview").src=url;
+
+    selectedAvatar=url;
+
+}
 </script>
 
 

@@ -312,8 +312,8 @@ alert(
 else{
 
    firebase.database().ref("users/" + user.uid).once("value").then(snapshot => {
-    console.log("UID:", user.uid);
-console.log(snapshot.val());
+    alert("UID: " + user.uid);
+alert("Name: " + (snapshot.val()?.name || "немає"));
 
 if (snapshot.exists()) {
     console.log(JSON.stringify(snapshot.val(), null, 2));

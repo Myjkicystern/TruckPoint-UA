@@ -438,19 +438,11 @@ font-family:Poppins;
 
 
 .friendItem{
-
-padding:15px;
-
-border-bottom:1px solid #eee;
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-font-weight:600;
-
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px;
+    border-bottom:1px solid #eee;
 }
 
 
@@ -1538,28 +1530,45 @@ let div=document.createElement("div");
 div.className="friendItem";
 
 
-div.innerHTML=`
+const avatar = user.avatar || "avatars/avatar1.png";
 
-<div>
+div.innerHTML = `
 
-👤 ${user.name}
+<div style="display:flex;align-items:center;gap:12px;">
 
-<br>
+    <img src="${avatar}"
+    style="
+        width:52px;
+        height:52px;
+        border-radius:50%;
+        object-fit:cover;
+        border:2px solid #0d6efd;
+        background:#eee;
+    ">
 
-<span class="friendStatus">
+    <div>
 
-${user.online ? 
-"🟢 Онлайн":"🔴 Офлайн"}
+        <b>${user.name}</b>
 
-</span>
+        <br>
+
+        <span class="friendStatus">
+            ${user.online ? "🟢 Онлайн" : "🔴 Офлайн"}
+        </span>
+
+    </div>
 
 </div>
 
-
 <div style="display:flex;gap:8px">
+
     <button class="friendMapBtn">📍</button>
+
     <button class="friendMapBtn removeFriendBtn"
-        style="background:#dc3545">🗑️</button>
+        style="background:#dc3545">
+        🗑️
+    </button>
+
 </div>
 
 `;

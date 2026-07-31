@@ -683,8 +683,7 @@ const userMarkers = {};
 const usersLayer = L.layerGroup().addTo(map);
 let myFriends = {};
 
-
-// завантаження списку друзів
+function loadMyFriends(){
 
 db.ref("friends/"+USER_ID).on("value",snap=>{
 
@@ -700,6 +699,8 @@ db.ref("friends/"+USER_ID).on("value",snap=>{
     loadUsers();
 
 });
+
+}
 
 function loadUsers(){
 
@@ -817,6 +818,8 @@ auth.onAuthStateChanged(async (user) => {
         return;
     }
     USER_ID = user.uid;
+
+    loadMyFriends();
 
    const snap = await db.ref("users/" + user.uid).once("value");
 const profile = snap.val();
@@ -970,7 +973,7 @@ function sendLocation(position){
 
 
     // беремо профіль користувача
-    db.ref("users/" + user.uid).once("value").then(snap => {
+    db.ref("users/" + USER_ID).once("value").then(snap => {
 
         const profile = snap.val() || {};
 
@@ -986,7 +989,7 @@ function sendLocation(position){
         // записуємо позицію
         db.ref("usersLocation/" + USER_ID).set({
 
-            uid: user.uid,
+            uid: USER_ID,
 
             name: userName,
 

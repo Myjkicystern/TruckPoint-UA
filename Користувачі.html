@@ -40,6 +40,19 @@ button{
 border:none;
 cursor:pointer;
 box-shadow:0 3px 8px rgba(0,0,0,.25);
+transition:0.15s ease;
+transform:scale(1);
+}
+
+
+/* ефект натискання */
+button:active{
+
+transform:scale(0.92);
+
+box-shadow:
+0 1px 3px rgba(0,0,0,.35);
+
 }
 
 #onlineBtn{
@@ -231,6 +244,7 @@ border-radius:20px;
 
 display:flex;
 align-items:center;
+transition:0.15s ease;
 gap:15px;
 
 padding:18px 22px;
@@ -256,6 +270,9 @@ background:#f7f9fc;
 
 .sheetBtn:active{
 background:#eef4ff;
+background:#dbeafe;
+
+transform:scale(0.97);
 }
 
 #friendModal{
@@ -327,6 +344,22 @@ color:white;
 font-size:16px;
 
 font-weight:600;
+
+}
+
+.friendButton:active,
+.friendMapBtn:active,
+.acceptBtn:active{
+
+transform:scale(0.93);
+
+opacity:0.8;
+
+}
+#onlineBtn:active,
+#layerBtn:active{
+
+transform:scale(0.88);
 
 }
 

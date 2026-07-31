@@ -817,9 +817,12 @@ auth.onAuthStateChanged(async (user) => {
         window.location.href = "index.html";
         return;
     }
+
     USER_ID = user.uid;
 
     loadMyFriends();
+
+    listenFriendRequests();
 
    const snap = await db.ref("users/" + user.uid).once("value");
 const profile = snap.val();
@@ -1342,19 +1345,28 @@ alert(
 
 }
 
+function listenFriendRequests(){
+
 db.ref("friendRequests/"+USER_ID)
 .on("value",snap=>{
 
 
-let count=snap.numChildren();
+let count = snap.numChildren();
 
 
-document.getElementById("requestCount")
-.innerHTML =
+document.getElementById("requestCount").innerHTML =
 count ? count : "";
 
 
+if(count > 0){
+
+console.log("Нових запитів:", count);
+
+}
+
 });
+
+}
 
 
 
